@@ -10,20 +10,23 @@ with open(file_path,'r') as f:
     medicine=json.load(f)
 
 def testimg(img_path):
-    img=Image.open(img_path)
-    img=transform(img)
-    img=torch.reshape(img,(-1,3,224,224))
-    img=img.to(device)
+    try:
+        img=Image.open(img_path)
+        img=transform(img)
+        img=torch.reshape(img,(-1,3,224,224))
+        img=img.to(device)
     
-    model=torch.load(model_path)
-    model=model.to(device)
+        model=torch.load(model_path)
+        model=model.to(device)
 
-    with torch.no_grad():
-        output=model(img)
+        with torch.no_grad():
+            output=model(img)
 
-    out=output.argmax(1).item()
-    print(medicine[str(out)])
-    #print(output)
+        out=output.argmax(1).item()
+        print(medicine[str(out)])
+        #print(output)
+    except:
+        pass
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
