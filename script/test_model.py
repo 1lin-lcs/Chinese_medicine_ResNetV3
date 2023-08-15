@@ -9,8 +9,9 @@ data_dir=r"E:\文件\Documents\Python\pytorch_learning\CM_data"
 model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small_new\1"
 batch_size=32
 
-#image_data=datasets.ImageFolder(os.path.join(data_dir,"test"),transforms.ToTensor())
-image_data=datasets.ImageFolder(os.path.join(data_dir,"valid"),transforms.ToTensor())
+trans=transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.435, 0.497, 0.328],[0.264, 0.253, 0.276])])
+image_data=datasets.ImageFolder(os.path.join(data_dir,"test"),trans)
+#image_data=datasets.ImageFolder(os.path.join(data_dir,"valid"),trans)
 testdata=DataLoader(image_data,batch_size=batch_size,shuffle=True)
 testdata_size=len(image_data)
 
