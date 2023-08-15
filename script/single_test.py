@@ -35,10 +35,13 @@ transform=transforms.Compose([
         transforms.ToTensor()
     ])
 
-model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small\test46_acc0.4932238459587097.pth"
-img_path=r"E:\文件\Documents\Python\pytorch_learning\中草药\cangerzi"
+model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small_new\1\test42_acc0.43696099519729614.pth"
+img_path=r"E:\文件\Documents\Python\pytorch_learning\中草药\zeqi"
 
 files=os.listdir(img_path)
+a=0
 for i in files:
     file=os.path.join(img_path,i)
+    print(a,end='\t')
     testimg(file)
+    a+=1

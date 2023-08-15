@@ -38,8 +38,8 @@ data_transforms={'train':transforms.Compose(
 
 
 batch_size=32
-
-data_dir=r"E:\文件\Documents\Python\pytorch_learning\data"
+f=open("./output.txt","w")
+data_dir=r"E:\文件\Documents\Python\pytorch_learning\CM_data"
 train_dir=data_dir+"\train"
 validation_dir=data_dir+"\valid"
 test_dir=data_dir+"\test"
@@ -48,15 +48,15 @@ image_datasets={x:datasets.ImageFolder(os.path.join(data_dir,x),data_transforms[
 dataloaders={x:DataLoader(image_datasets[x],batch_size=batch_size,shuffle=True) for x in ['train','valid','test']}
 dataset_sizes={x:len(image_datasets[x]) for x in ['train','valid','test']}
 
-print(image_datasets['train'].class_to_idx)
+#print(image_datasets['train'].class_to_idx)
 
 #训练的设备
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 #数据集的长度
-train_data_size=len(image_datasets['train'])
-validation_data_size=len(image_datasets['valid'])
-test_data_size=len(image_datasets['test'])
+train_data_size=dataset_sizes['train']
+validation_data_size=dataset_sizes['valid']
+test_data_size=dataset_sizes['test']
 
 #print("train_data_size: "+str(train_data_size)+"test_data_size: "+str(test_data_size))
 
@@ -64,7 +64,7 @@ test_data_size=len(image_datasets['test'])
 
 #test_dataset=DataLoader(validation_data,batch_size)
 
-test=MobileNetV3_large(54)     #设置分类的数目
+test=MobileNetV3_large(79)     #设置分类的数目
 #test=torch.load(r"E:\文件\Documents\Python\pytorch_learning\model\test_11.pth")
 test=test.to(device)    #用GPU，这个可以不用赋值
 #损失函数
@@ -85,6 +85,7 @@ writer=SummaryWriter("./log")
 
 for i in range(epoch):
     print("----------第{}轮训练开始----------".format(i+1))
+    f.write("----------第{}轮训练开始----------\n".format(i+1))
     #训练步骤
     #如果有Dropout Batchnorm一定要要调用xxx.train()[train] 和xxx.eval()[test]
     test.train()
@@ -102,6 +103,7 @@ for i in range(epoch):
         total_train_loss+=loss
         if total_train_step%100==0:
             print("训练次数{}，Loss:{}".format(total_train_step,loss.item()))
+            f.write("训练次数{}，Loss:{}\n".format(total_train_step,loss.item()))
             writer.add_scalar("train_loss",loss.item(),total_train_step)
     print("整体训练集上的Loss:{}".format(total_train_loss))
     #测试步骤开始
@@ -120,13 +122,15 @@ for i in range(epoch):
             accuray=(output.argmax(1)==targets).sum()
             total_accuray+=accuray
     print("整体测试集上的Loss:{}".format(total_test_loss))
+    f.write("整体测试集上的Loss:{}\n".format(total_test_loss))
     print("整体测试集上的Accuray:{}".format(total_accuray/validation_data_size))       #这里要改总数
+    f.write("整体测试集上的Accuray:{}\n".format(total_accuray/validation_data_size))
     writer.add_scalar("test_loss",total_test_loss,total_test_step)
     writer.add_scalar("accuray",total_accuray/validation_data_size,total_test_step)     #这里要改总数
     total_test_step+=1
 
     torch.save(test,"./model/test_{}.pth".format(i))
     print("模型已保存")
+    f.write("模型已保存")
 writer.close()
-
-
+f.close()

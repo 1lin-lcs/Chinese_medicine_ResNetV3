@@ -5,14 +5,14 @@ from torch.utils.data import DataLoader
 from torch.nn import *
 import os
 
-data_dir=r"E:\文件\Documents\Python\pytorch_learning\data"
-model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small"
+data_dir=r"E:\文件\Documents\Python\pytorch_learning\CM_data"
+model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small_new\1"
 batch_size=32
 
-image_data=datasets.ImageFolder(os.path.join(data_dir,"test"),transforms.ToTensor())
-#image_data=datasets.ImageFolder(os.path.join(data_dir,"valid"),transforms.ToTensor())
+#image_data=datasets.ImageFolder(os.path.join(data_dir,"test"),transforms.ToTensor())
+image_data=datasets.ImageFolder(os.path.join(data_dir,"valid"),transforms.ToTensor())
 testdata=DataLoader(image_data,batch_size=batch_size,shuffle=True)
-testdata_size=len(testdata)
+testdata_size=len(image_data)
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -38,7 +38,6 @@ for i in model_file:
             loss=loss_fn(output,targets)
             loss_sum+=loss
             acc=(output.argmax(1)==targets).sum()
-            #print(acc)
             accuary+=acc
     print(i)
     print("accuary is {}, loss_sum is {}".format(accuary/testdata_size,loss_sum))
