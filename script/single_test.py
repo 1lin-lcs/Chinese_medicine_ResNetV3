@@ -13,7 +13,7 @@ def testimg(img_path):
     try:
         img=Image.open(img_path)
         img=transform(img)
-        img=torch.reshape(img,(-1,3,224,224))
+        img=torch.reshape(img,(1,3,224,224))
         img=img.to(device)
     
         model=torch.load(model_path)
@@ -25,14 +25,15 @@ def testimg(img_path):
         out=output.argmax(1).item()
         print(medicine[str(out)])
         #print(output)
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 transform=transforms.Compose([
         transforms.Resize((224,224)),
-        transforms.ToTensor()
+        transforms.ToTensor(),
+        transforms.Normalize([0.435, 0.497, 0.328],[0.264, 0.253, 0.276])
     ])
 
 model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small_new\1\test42_acc0.43696099519729614.pth"
