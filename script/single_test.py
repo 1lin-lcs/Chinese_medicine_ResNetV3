@@ -5,7 +5,7 @@ from PIL import Image
 import os
 import json
 
-file_path=r"E:\文件\Documents\Python\pytorch_learning\Chinese_Medicine_for_test.json"
+file_path=r"E:\文件\Documents\Python\pytorch_learning\Chinese_Medicine_old.json"
 with open(file_path,'r') as f:
     medicine=json.load(f)
 
@@ -13,7 +13,7 @@ def testimg(img_path):
     try:
         img=Image.open(img_path)
         img=transform(img)
-        img=torch.reshape(img,(1,3,224,224))
+        img=torch.reshape(img,(-1,3,224,224))
         img=img.to(device)
     
         model=torch.load(model_path)
@@ -36,8 +36,8 @@ transform=transforms.Compose([
         transforms.Normalize([0.435, 0.497, 0.328],[0.264, 0.253, 0.276])
     ])
 
-model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small_new\1\test42_acc0.43696099519729614.pth"
-img_path=r"E:\文件\Documents\Python\pytorch_learning\中草药\zeqi"
+model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small\4\test42_acc0.7186858654022217.pth"
+img_path=r"E:\文件\Documents\Python\pytorch_learning\中草药\Agastacherugosa"
 
 files=os.listdir(img_path)
 a=0
