@@ -3,9 +3,13 @@ import os
 import warnings
 
 warnings.filterwarnings("error",category=UserWarning)
-
-mydir=r"E:\文件\Documents\Python\pytorch_learning\中草药"
-mydir2=r"E:\test"
+############################################
+#mydir是DataSet数据集文件夹，需要自己设置       #
+#mydir2是图片保存目录文件夹	，需要自己设置		   #
+#这里生成的图片不会分类，配合Mean_std_cal.py使用#
+############################################
+mydir=r""
+mydir2=r""
 if not os.path.exists(mydir2):
     os.mkdir(mydir2)
 os.chdir(mydir)

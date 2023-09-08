@@ -5,8 +5,13 @@ from torch.utils.data import DataLoader
 from torch.nn import *
 import os
 
-data_dir=r"E:\文件\Documents\Python\pytorch_learning\CM_data"
-model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small_new\1"
+############################################
+#data_dir是数据集文件夹		               #
+#model_path是model文件所在文件夹			   #
+############################################
+
+data_dir=r"../DataSet"
+model_path=r"../model"
 batch_size=32
 
 trans=transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.435, 0.497, 0.328],[0.264, 0.253, 0.276])])

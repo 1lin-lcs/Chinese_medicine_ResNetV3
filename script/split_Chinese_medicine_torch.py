@@ -6,7 +6,11 @@ import warnings
 
 warnings.filterwarnings("error",category=UserWarning)
 
-root_dir=r"E:\文件\Documents\Python\pytorch_learning\中草药"
+############################################
+#root_path是生成分类文件夹的根目录，需要自己设置 #
+############################################
+
+root_dir=r"../DataSet"
 dataset=datasets.ImageFolder(root_dir)
 
 dataset.classes
@@ -25,7 +29,7 @@ test_size=int(0.2*data_len)
 valid_size=int(0.2*data_len)
 
 def split_imgs(classes,file):
-    root_path=r"E:\文件\Documents\Python\pytorch_learning\data"
+    root_path=r""
 
     if not os.path.exists(os.path.join(root_path,"train")):
         os.mkdir(os.path.join(root_path,"train"))
@@ -66,7 +70,7 @@ for line in train_datasets:
     split_imgs("train",line[0])
     train_imgList_line.append(line[1])
 
-with open("./data/train.txt","wt") as f:
+with open("./train.txt","wt") as f:
     i=0
     for line in train_imgList_line:
         if i==train_size:
@@ -84,7 +88,7 @@ for line in test_datasets:
     split_imgs("test",line[0])
     test_imgList_line.append(line[1])
 
-with open("./data/test.txt","wt") as f:
+with open("./test.txt","wt") as f:
     i=0
     for line in test_imgList_line:
         if i==test_size:
@@ -102,7 +106,7 @@ for line in valid_datasets:
     split_imgs("valid",line[0])
     valid_imgList_line.append(line[1])
 
-with open("./data/valid.txt","wt") as f:
+with open("./valid.txt","wt") as f:
     i=0
     for line in valid_imgList_line:
         if i==valid_size:

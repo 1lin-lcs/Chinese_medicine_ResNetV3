@@ -5,10 +5,6 @@ from tensorboardX import SummaryWriter
 from torchvision import transforms,datasets
 import os
 
-#train_data=torchvision.datasets.CIFAR10(root="./cifar10",train=True,transform=torchvision.transforms.ToTensor(),download=True)
-
-#test_data=torchvision.datasets.CIFAR10(root="./cifar10",train=False,transform=torchvision.transforms.ToTensor(),download=True)
-
 #normMean = [0.4359504, 0.49714467, 0.32818076]
 #normStd = [0.2648534, 0.25331333, 0.27614158]
 
@@ -39,7 +35,7 @@ data_transforms={'train':transforms.Compose(
 
 batch_size=32
 f=open("./output.txt","w")
-data_dir=r"E:\文件\Documents\Python\pytorch_learning\CM_data"
+data_dir=r"../DataSet"
 train_dir=data_dir+"\train"
 validation_dir=data_dir+"\valid"
 test_dir=data_dir+"\test"
@@ -65,7 +61,7 @@ test_data_size=dataset_sizes['test']
 #test_dataset=DataLoader(validation_data,batch_size)
 
 test=MobileNetV3_large(79)     #设置分类的数目
-#test=torch.load(r"E:\文件\Documents\Python\pytorch_learning\model\test_11.pth")
+#test=torch.load(r"")
 test=test.to(device)    #用GPU，这个可以不用赋值
 #损失函数
 loss_fn=nn.CrossEntropyLoss()

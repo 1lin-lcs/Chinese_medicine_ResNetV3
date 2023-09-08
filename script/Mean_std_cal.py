@@ -8,8 +8,10 @@ from tqdm import tqdm
 img_h, img_w = 224, 224  # 根据自己数据集适当调整，影响不大
 means, stdevs = [], []
 img_list = []
-
-TRAIN_DATASET_PATH = r"E:\test"
+#########################################################################
+#TRAIN_DATASET_PATH是全部图片的文件夹的路径，配合Resize_pic.py使用，需要自己设置#
+#########################################################################
+TRAIN_DATASET_PATH = r""
 
 image_fns=[]
 
