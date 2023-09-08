@@ -16,7 +16,7 @@ data_transforms={'train':transforms.Compose(
                         transforms.ColorJitter(brightness=0.2,contrast=0.1,saturation=0.1,hue=0.1),
                         transforms.RandomGrayscale(p=0.025),
                         transforms.ToTensor(),
-                        transforms.Normalize([0.435, 0.497, 0.328],[0.264, 0.253, 0.276])
+                        transforms.Normalize([0.435, 0.497, 0.328],[0.264, 0.253, 0.276])	#([normMean],[normStd])
                         ]
                     ),
                  'valid':transforms.Compose(
@@ -24,7 +24,7 @@ data_transforms={'train':transforms.Compose(
                          transforms.Resize(256),
                          transforms.CenterCrop(224),
                          transforms.ToTensor(),
-                         transforms.Normalize([0.435, 0.497, 0.328],[0.264, 0.253, 0.276])
+                         transforms.Normalize([0.435, 0.497, 0.328],[0.264, 0.253, 0.276])	#([normMean],[normStd])
                          ]
                     ),
                  'test':transforms.Compose(
