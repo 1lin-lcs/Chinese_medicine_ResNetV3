@@ -1,0 +1,13 @@
+{
+  "status": {
+    "event": 0, //0是服务器回复，1是登录，2是注册，3是成功，4是失败，5是图片识别，6是识别结果，7是修改密码，8是请求密码
+    "error": 0, //0是没有问题
+    "result": "",
+    "filetype": ""
+  },
+  "information": {
+    "username": "",
+    "password": "",
+    "email": ""
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "IsAutoQuit": true, 
+  "IntervalTime": 10, 
+  "QuitCount": 5, 
+  "information":{
+	"HostName":"",
+	"Port":0,
+	"DataBaseName":"",
+	"Username":"",
+	"Password":""
+  }
+}
