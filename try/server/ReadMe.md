@@ -13,21 +13,43 @@ configuration字段的解释：
   - DataBaseName：数据库名字
   - Username：数据库用户
   - Password：数据库用户密码
-
-
+    
+    
 
 使用pro文件在Qt Creator进行构建
 
 需要连接的lib有network、sql和python
 
-sql是使用MySQL
+sql是使用MySQL，可能需要自行编译qmysql驱动
 
-python所需的include已提供，lib可以用自己安装的
+python所需的include、lib可以用自己安装的
+
+    注意：python的object.h与Qt有冲突，需要修改一些object.h
+
+    修改object.h：
+
+```C
+typedef struct{    
+
+　　　　　　const char* name;    
+
+　　　　　　int basicsize;   
+
+　　　　　　 int itemsize;    
+
+　　　　　　unsigned int flags;
+
+　　　　　　#undef slots    //这里取消slots宏定义
+
+　　　　　　　PyType_Slot *slots;　 /* terminated by slot==0. */
+
+　　　　　　#define slots Q_SLOTS　　//这里恢复slots宏定义与QT中QObjectDefs.h中一致
+
+　　} PyType_Spec;
+```
 
 python安装pytorch、torchvision、PIL库
 
 
 
 暂时多个客户端连接是有问题的
-
-
