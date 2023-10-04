@@ -266,7 +266,7 @@ void Chinese_Medicine_Client::DealLogIn() {
  * @brief 展示用户信息
  */
 void Chinese_Medicine_Client::ShowInfo() {
-    UserInfo* info = new UserInfo(nullptr,Username,Email,Password);
+    UserInfo* info = new UserInfo(nullptr,Username,Password,Email);
     info->setAttribute(Qt::WA_DeleteOnClose);
     info->show();
     connect(info, &UserInfo::SendPa, this, &Chinese_Medicine_Client::SendNPassword);
