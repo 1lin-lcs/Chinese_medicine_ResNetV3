@@ -2,7 +2,7 @@
 
 启动前先设置configuration
 
-configuration字段的解释：
+configuration键的解释：
 
 - IsAutoQuit：是否启用自动关闭的功能
 - IntervalTime：服务器检测是否有连接的间隔时常，单位是秒
