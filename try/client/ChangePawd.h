@@ -22,7 +22,7 @@ private:
 	Ui::CPawd ui;
 	QString Oldpassword="";
 	QString Username;
-	bool IsQiut = true;
+	bool IsQiut = false;
 
 private slots:
 	void ChangePd();

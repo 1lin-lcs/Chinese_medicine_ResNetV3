@@ -145,7 +145,7 @@ void MyTcpServer::task(QTcpSocket* socket) {
     case 1:TaskSignIn(obj.value("information").toObject(), socket); break;
     case 2:TaskSignUp(obj.value("information").toObject(), socket); break;
     case 5:TaskIdentify(obj.value("state").toObject(),socket); break;
-    case 7:ChangePassword(obj.value("state").toObject(), obj.value("information").toObject(), socket); break;
+    case 7:ChangePassword(obj.value("information").toObject(),obj.value("state").toObject() , socket); break;
     case 8:GetPassword(obj.value("state").toObject().value("result").toString(), socket); break;
     default:break;
     }
@@ -155,14 +155,21 @@ void MyTcpServer::task(QTcpSocket* socket) {
  * @brief 处理登录操作
  * @param obj Json文件中的information对象
  */
-void MyTcpServer::TaskSignIn(QJsonObject obj,QTcpSocket* socket) {
+void MyTcpServer::TaskSignIn(QJsonObject obj, QTcpSocket* socket) {
     qDebug() << "处理登录";
     QString username = obj.value("username").toString();
     QString password = obj.value("password").toString();
-    QString sql = QString("select password from user where username=\"%1\"").arg(username);
-    QString res=conDB->FindData(sql, 2);
-    if (res=="" || res.compare(password) != 0) {
+    QString sql = QString("select username from user where username=\"%1\"").arg(username);
+    QString res = conDB->FindData(sql, 1);
+    QString sql2 = QString("select password from user where username=\"%1\"").arg(username);
+    QString res2 = conDB->FindData(sql2, 2);
+    if (res == "" || res.compare(username) != 0) {
         QByteArray data = CreateJson(4, 0, "用户不存在");
+        socket->write(data, data.size());
+        return;
+    }
+    if (res2=="" || res2.compare(password) != 0) {
+        QByteArray data = CreateJson(4, 0, "密码错误");
         socket->write(data, data.size());
     }
     else {
@@ -322,16 +329,16 @@ void MyTcpServer::GetPassword(QString username,QTcpSocket* socket) {
 void MyTcpServer::ChangePassword(QJsonObject username, QJsonObject password,QTcpSocket* socket) {
     QString user = username.value("username").toString();
     QString pw = password.value("result").toString();
-    QString sql = QString("update user set \"%1\" where username = \"%2\"").arg(pw,user);
+    QString sql = QString("update user set password=\"%1\" where username = \"%2\"").arg(pw,user);
     bool ok=conDB->UpdataData(sql);
-    int state;
+    QByteArray data;
     if (ok) {
-        state = 3;
+        data = CreateJson(3, 0, "修改成功");
     }
     else {
-        state = 4;
+        data = CreateJson(4, 0, "修改失败");
     }
-    QByteArray data = CreateJson(state,0,"");
+    //qDebug() << user << pw << ok;
     socket->write(data, data.size());
 }
 

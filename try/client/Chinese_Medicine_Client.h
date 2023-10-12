@@ -33,9 +33,11 @@ private:
     bool IsSignIn = false;
     bool IsSendSignIn = false;
     bool IsSendSignUp = false;
+    bool IsChangePw = false;
     QString Username;
     QString Email;
     QString Password;
+    QString ChPw;
    
 private slots:
     void OpenPic();

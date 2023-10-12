@@ -145,6 +145,7 @@ void Chinese_Medicine_Client::GetInfo(QStringList info){
         Password = info.at(2);
         Email = info.at(3);
         socket->write(data, data.size());
+        //qDebug() << Username << Password << Email;
     }
 }
 
@@ -220,9 +221,11 @@ void Chinese_Medicine_Client::ReadConfig(){
     }
     QJsonObject json = doc.object();
     IsSignIn = json.value("IsSignIn").toBool();
-    QJsonObject info = json.value("information").toObject();
+    QJsonObject info = json.value("Information").toObject();
     Username = info.value("Username").toString();
+    Password = info.value("Password").toString();
     Email = info.value("Email").toString();
+    //qDebug() << Username << Email;
     file.close();
 }
 
@@ -278,6 +281,9 @@ void Chinese_Medicine_Client::ShowInfo() {
  * @param 新的密码
  */
 void Chinese_Medicine_Client::SendNPassword(QString password) {
+    //qDebug() << password;
+    IsChangePw = true;
+    ChPw = password;
     QByteArray data = MakeJsonData(7, 0, password, Username, "", "");
     socket->write(data, data.size());
 }
@@ -287,6 +293,7 @@ void Chinese_Medicine_Client::SendNPassword(QString password) {
  */
 void Chinese_Medicine_Client::UserLogOut() {
     IsSignIn = false;
+    WriteConfig(false, "", "", "");
     ui.actionSignIn->setText("登录");
     if (!ui.actionSignUp->isEnabled())
         ui.actionSignUp->setEnabled(true);
@@ -298,6 +305,12 @@ void Chinese_Medicine_Client::UserLogOut() {
  * @brief 判断填写信息后是否登录
  */
 void Chinese_Medicine_Client::IdentitfSignIn(QJsonObject result) {
+    if (IsChangePw) {
+        Password = ChPw;
+        WriteConfig(true, Username, Password, Email);
+        IsChangePw = false;
+        return;
+    }
     if (!IsSendSignIn && !IsSendSignUp)
         return;
     if (IsSendSignUp) {

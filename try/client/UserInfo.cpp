@@ -38,6 +38,7 @@ void UserInfo::CPassword() {
  * @brief 发送新密码
  */
 void UserInfo::SendPassword(QString newpassword) {
+	//qDebug() << newpassword;
 	emit(SendPa(newpassword));
 }
 
