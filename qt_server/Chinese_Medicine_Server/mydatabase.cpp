@@ -2,8 +2,11 @@
 
 MyDataBase::MyDataBase(QObject *parent)
     : QObject{parent}
-{
+{}
 
+MyDataBase::~MyDataBase(){
+    if(DataBaseName!="")
+        QSqlDatabase::removeDatabase(DataBaseName);
 }
 
 /** @brief 这是用来初始化要连接数据库的信息
@@ -22,10 +25,11 @@ MyDataBase::MyDataBase(QString hostname,int port,QString databaseName,QString us
 }
 
 /** @brief 连接数据库
+ *  @param name 设置连接数据库的名称
  *  @return true/false 连接成功返回true，否则false
 */
-bool MyDataBase::LinkDB(){
-    db=QSqlDatabase::addDatabase("QMYSQL");
+bool MyDataBase::LinkDB(QString name){
+    db=QSqlDatabase::addDatabase("QMYSQL",name);
     db.setHostName(HostName);
     db.setPort(Port);
     db.setDatabaseName(DataBaseName);
@@ -49,13 +53,11 @@ bool MyDataBase::InsertData(QString sqlcommand){
         qDebug()<<"数据库未打开";
         return false;
     }
-    QSqlQuery* query=new QSqlQuery();
-    if(!query->exec(sqlcommand)){
+    QSqlQuery query(sqlcommand,db);
+    if(!query.exec(sqlcommand)){
         qDebug()<<"插入数据失败";
-        delete query;
         return false;
     }
-    delete query;
     return true;
 }
 
@@ -68,15 +70,13 @@ QString MyDataBase::FindSingleData(QString sqlcommand){
         qDebug()<<"数据库未打开";
         return "";
     }
-    QSqlQuery* query=new QSqlQuery();
-    if(!query->exec(sqlcommand)){
+    QSqlQuery query(sqlcommand,db);
+    if(!query.exec(sqlcommand)){
         qDebug()<<"查到数据失败";
-        delete query;
         return "";
     }
-    query->next();
-    QString data=query->value(0).toString();
-    delete query;
+    query.next();
+    QString data=query.value(0).toString();
     return data;
 }
 
@@ -89,19 +89,21 @@ QList<QStringList>* MyDataBase::FindDatas(QString sqlcommand){
         qDebug()<<"数据库未打开";
         return nullptr;
     }
-    QSqlQuery* query=new QSqlQuery();
-    if(!query->exec(sqlcommand)){
+    QSqlQuery query(sqlcommand,db);
+    if(!query.exec(sqlcommand)){
         qDebug()<<"查找数据失败";
-        delete query;
         return nullptr;
     }
-    QSqlRecord record=query->record();
+    QSqlRecord record=query.record();
     int count=record.count();
     QStringList values;
     QList<QStringList> data=new QList<QStringL>;
-    while(query->next()){
+    while(query.next()){
         for(int i=0;i<count;i++){
-            values.append(query->value(i).toString());
+            if(query.value(i).isValid())
+                values.append(query.value(i).toString());
+            else
+                values.append("");
         }
         data.append(values);
     }
@@ -117,13 +119,11 @@ bool MyDataBase::UpdataData(QString sqlcommand){
         qDebug()<<"数据库未打开";
         return false;
     }
-    QSqlQuery* query=new QSqlQuery();
-    if(!query->exec(sqlcommand)){
+    QSqlQuery query(sqlcommand,db);
+    if(!query.exec(sqlcommand)){
         qDebug()<<"更新数据失败";
-        delte query;
         return false;
     }
-    delete query;
     return true;
 }
 
@@ -136,13 +136,11 @@ bool MyDataBase::DeleteData(QString sqlcommand){
         qDebug()<<"数据库未打开";
         return false;
     }
-    QSqlQuery* query=new QSqlQuery;
-    if(!query->exec(sqlcommand)){
+    QSqlQuery query(sqlcommand,db);
+    if(!query.exec(sqlcommand)){
         qDebug()<<"删除数据失败";
-        delete query;
         return false;
     }
-    delete query;
     return true;
 }
 
@@ -151,13 +149,55 @@ bool MyDataBase::DeleteData(QString sqlcommand){
 */
 QStringList* MyDataBase::GetDataTableName(){
     QString sqlcommand=QString("show tables");
-    QSqlQuery* query=new QSqlQuery();
-    if(!query->exec(sqlcommand)){
+    QSqlQuery query(sqlcommand,db);
+    if(!query.exec(sqlcommand)){
         return nullptr;
     }
     QStringList names=new QStringList;
-    while(query->next()){
-        names.append(query->value(0).toString());
+    while(query.next()){
+        names.append(query.value(0).toString());
     }
     return names;
+}
+
+/** @brief 返回数据表的字段信息
+ *  @param sqlcommand 执行查询数据表的语句，由调用者生成
+ *  @return infos 数据表的字段信息，失败返回空
+*/
+QList<QStringList>* MyDataBase::GetTableColumnName(QString sqlcommand){
+    if(!db.open()){
+        qDebug()<<"数据库未打开";
+        return nullptr;
+    }
+    QSqlQuery query(sqlcommand,db);
+    if(!query.exec(sqlcommand)){
+        qDebug()<<"查询失败";
+        return nullptr;
+    }
+    QSqlRecord record=query.record();
+    int count=record.count();
+    QStringList info;
+    QList<QStringList> infos=new QList<QStringList>();
+    while(query.next()){
+        for(int i=0;i<count;i++){
+            if(query.value(i).isValid())
+                info.append(query.value(i).toString());        //这里暂时是Field|Type|Null|Key|Default|Extra这几个类型
+            else
+                info.append("");
+        }
+        infos.append(info);
+    }
+    return infos;
+}
+
+/** @brief 关闭数据库
+ *  @return true/false 是否关闭成功，应该不会出现什么问题吧
+*/
+bool MyDataBase::CloseDB(){
+    if(!db.open()){
+        qDebug()<<"数据库未打开";
+        return true;
+    }
+    db.close();
+    return true;
 }
