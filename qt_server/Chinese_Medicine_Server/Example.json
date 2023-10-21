@@ -1,0 +1,16 @@
+{
+	"status":{
+		"server":0,
+		"client":0,
+		"error":0,
+	},
+	"response":{
+		"data":"",
+		"filetyle":""
+	},
+	"information":{
+		"username":"",
+		"password":"",
+		"email":""
+	}
+}

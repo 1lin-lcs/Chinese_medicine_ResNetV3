@@ -1,0 +1,14 @@
+{
+	"Config":{
+		"IsAutoQuit":true,
+		"InvervalTime":10,
+		"QuitCoint":5
+	}
+	"DataBaseUser":{
+		"HostName":"localhost",
+		"Port":3306,
+		"DataBaseName":"TestDataBase",
+		"UserName":"root",
+		"Password":"MySQL12ABab12"
+	}
+}

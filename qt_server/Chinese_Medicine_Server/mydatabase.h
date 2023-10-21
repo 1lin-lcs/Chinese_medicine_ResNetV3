@@ -5,6 +5,8 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QList>
+#include <QStringList>
 
 class MyDataBase : public QObject
 {
