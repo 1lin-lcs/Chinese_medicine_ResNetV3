@@ -5,8 +5,14 @@ MyTcpSocket::MyTcpSocket()
 
 }
 
+/*! @brief 这是设置socketdescript的构造函数
+*/
+MyTcpSocket::MyTcpSocket(qintptr socketdesc){
+    socketDesc=socketdesc;
+    this->setSocketDescriptor(socketdesc);
+}
+
 /*! @brief 这是用来处理受到数据是否是一个完整的Json文件的函数
- *
 */
 void MyTcpSocket::GetJsonFile(){
     JsonData->append(this->readAll());
@@ -14,6 +20,16 @@ void MyTcpSocket::GetJsonFile(){
     if(doc.isNull()||JsonError.error!=QJsonParseError::NoError){
         return;
     }
-    emit(SendJsonFile(doc));
+    emit(SendJsonFile(doc,socketDesc));
     JsonData.clear();
+}
+
+/*! @brief 这是发送数据用的
+*/
+void MyTcpSocket::SendData(QJsonDocument* doc, qintptr socketdesc){
+    if(socketdesc==socketDesc){
+        QByteArray array=doc->toJson();
+        this->write(array);
+        delete doc;
+    }
 }

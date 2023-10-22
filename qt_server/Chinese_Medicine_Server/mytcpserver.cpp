@@ -9,4 +9,5 @@ MyTcpServer::MyTcpServer()
  */
 void MyTcpServer::incomingConnection(qintptr handle){
     emit(SocketDesc(handle));
+    emit(newConnection());
 }

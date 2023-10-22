@@ -15,6 +15,7 @@ public:
     explicit MyDataBase(QObject *parent = nullptr);
     MyDataBase(QString,int,QString,QString,QString);
     ~MyDataBase();
+
     bool LinkDB(QString);                           //连接到数据库
     bool InsertData(QString);                       //插入数据
     QString FindSingleData(QString);                //查找单个数据
