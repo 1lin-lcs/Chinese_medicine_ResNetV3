@@ -59,6 +59,7 @@ private slots:
     void CloseProgram();                        //自动退出程序!!注意!!这个函数还不完善
     void CreateSocket();                        //创建新的socket，并移入新的线程
     void GetJsonFile(QJsonDocument*,qintptr);   //获得Json文件内容
+    void DeleteSocketThread();                  //从socketMap中获得信息，删除没有连接的socket和thread
 signals:
     void SendJsonDoc(QJsonDocument*,qintptr);   //发送信号到socket，让socket发送数据
 };

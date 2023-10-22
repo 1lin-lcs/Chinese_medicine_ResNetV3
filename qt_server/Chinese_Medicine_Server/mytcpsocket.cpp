@@ -33,3 +33,10 @@ void MyTcpSocket::SendData(QJsonDocument* doc, qintptr socketdesc){
         delete doc;
     }
 }
+
+/*! @brief »ñµÃdescÃèÊö·û
+ *  @return socketDesc socketÃèÊö·û
+*/
+qintptr MyTcpSocket::GetDesc(){
+    return socketDesc;
+}

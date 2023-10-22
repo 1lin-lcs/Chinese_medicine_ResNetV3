@@ -13,6 +13,7 @@ class MyTcpSocket : public QTcpSocket
 public:
     MyTcpSocket();
     MyTcpSocket(qintptr);
+    qintptr GetDesc();
 private:
     QByteArray* JsonData=new QByteArray();
     QJsonParseError JsonError;

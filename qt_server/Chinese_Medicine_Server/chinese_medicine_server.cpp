@@ -328,9 +328,11 @@ void Chinese_Medicine_Server::CreateSocket(qintptr socketdesc){
     connect(socket,&MyTcpSocket::SendJsonFile,this,&Chinese_Medicine_Server::GetJsonFile);
     connect(socket,&MyTcpSocket::readyRead,socket,&MyTcpSocket::GetJsonFile);
     connect(this,&Chinese_Medicine_Server::SendJsonDoc,socket,&MyTcpSocket::SendData);
+    connect(socket,&MyTcpSocket::disconnected,this,&Chinese_Medicine_Server::DeleteSocketThread,Qt::QueuedConnection);
 
     QThread* thread=new QThread(this);
     socket->moveToThread(thread);
+
     QMap<MyTcpSocket*,QThread*> map(socket,thread);
     socketMap.insert(socketdesc,map);
 }
@@ -341,4 +343,16 @@ void Chinese_Medicine_Server::CreateSocket(qintptr socketdesc){
 */
 void Chinese_Medicine_Server::GetJsonFile(QJsonDocument* doc,qintptr socketdesc){
     Task(doc,socketdesc);
+}
+
+/*! @brief 删除没有连接的socket和thread
+*/
+void Chinese_Medicine_Server::DeleteSocketThread(){
+    MyTcpSocket* socket=(MyTcpServer*)sender();
+    qintptr handle=socket->GetDesc();
+    QMap temp=socketMap.value(handle);
+    QThread* thread=temp.value(socket);
+    socket->deleteLater();
+    thread->deleteLater();
+    socketMap.remove(handle);
 }
