@@ -7,7 +7,11 @@ int main(int argc, char *argv[])
     Chinese_Medicine_Server server;
     if(!server.ReadConfig())
         return -1;
-    if(server.Start())
+    if(!server.Start())
         return -2;
+#ifdef UsePython
+    if(!server.InitPython())
+        return -3;
+#endif
     return a.exec();
 }

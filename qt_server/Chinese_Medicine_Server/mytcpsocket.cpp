@@ -1,9 +1,7 @@
 #include "mytcpsocket.h"
 
 MyTcpSocket::MyTcpSocket()
-{
-
-}
+{}
 
 /*! @brief 这是设置socketdescript的构造函数
 */
@@ -20,7 +18,7 @@ void MyTcpSocket::GetJsonFile(){
     if(doc.isNull()||JsonError.error!=QJsonParseError::NoError){
         return;
     }
-    emit(SendJsonFile(doc,socketDesc));
+    emit SendJsonFile(doc,socketDesc);
     JsonData.clear();
 }
 

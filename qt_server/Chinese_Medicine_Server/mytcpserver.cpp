@@ -8,6 +8,6 @@ MyTcpServer::MyTcpServer()
  * @note ¹Ù·½ÎÄµµ socketDescriptor argument is the native socket descriptor for the accepted connection
  */
 void MyTcpServer::incomingConnection(qintptr handle){
-    emit(SocketDesc(handle));
-    emit(newConnection());
+    emit SocketDesc(handle);
+    emit newConnection();
 }

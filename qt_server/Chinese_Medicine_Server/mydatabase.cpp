@@ -37,10 +37,10 @@ bool MyDataBase::LinkDB(QString name){
     db.setPassword(PassWord);
     bool ok=db.open();
     if(!ok){
-        qDebug()<<"打开数据库失败";
+        qInfo()<<"打开数据库失败";
         return false;
     }
-    qDebug()<<"连接数据库成功";
+    qInfo()<<"连接数据库成功";
     return true;
 }
 
@@ -50,12 +50,12 @@ bool MyDataBase::LinkDB(QString name){
 */
 bool MyDataBase::InsertData(QString sqlcommand){
     if(!db.open()){
-        qDebug()<<"数据库未打开";
+        qInfo()<<"数据库未打开";
         return false;
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qDebug()<<"插入数据失败";
+        qInfo()<<"插入数据失败";
         return false;
     }
     return true;
@@ -67,12 +67,12 @@ bool MyDataBase::InsertData(QString sqlcommand){
 */
 QString MyDataBase::FindSingleData(QString sqlcommand){
     if(!db.open()){
-        qDebug()<<"数据库未打开";
+        qInfo()<<"数据库未打开";
         return "";
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qDebug()<<"查到数据失败";
+        qInfo()<<"查到数据失败";
         return "";
     }
     query.next();
@@ -86,12 +86,12 @@ QString MyDataBase::FindSingleData(QString sqlcommand){
 */
 QList<QStringList>* MyDataBase::FindDatas(QString sqlcommand){
     if(!db.open()){
-        qDebug()<<"数据库未打开";
+        qInfo()<<"数据库未打开";
         return nullptr;
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qDebug()<<"查找数据失败";
+        qInfo()<<"查找数据失败";
         return nullptr;
     }
     QSqlRecord record=query.record();
@@ -116,12 +116,12 @@ QList<QStringList>* MyDataBase::FindDatas(QString sqlcommand){
 */
 bool MyDataBase::UpdataData(QString sqlcommand){
     if(!db.open()){
-        qDebug()<<"数据库未打开";
+        qInfo()<<"数据库未打开";
         return false;
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qDebug()<<"更新数据失败";
+        qInfo()<<"更新数据失败";
         return false;
     }
     return true;
@@ -133,12 +133,12 @@ bool MyDataBase::UpdataData(QString sqlcommand){
 */
 bool MyDataBase::DeleteData(QString sqlcommand){
     if(!db.open()){
-        qDebug()<<"数据库未打开";
+        qInfo()<<"数据库未打开";
         return false;
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qDebug()<<"删除数据失败";
+        qInfo()<<"删除数据失败";
         return false;
     }
     return true;
@@ -166,12 +166,12 @@ QStringList* MyDataBase::GetDataTableName(){
 */
 QList<QStringList>* MyDataBase::GetTableColumnName(QString sqlcommand){
     if(!db.open()){
-        qDebug()<<"数据库未打开";
+        qInfo()<<"数据库未打开";
         return nullptr;
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qDebug()<<"查询失败";
+        qInfo()<<"查询失败";
         return nullptr;
     }
     QSqlRecord record=query.record();
@@ -195,7 +195,7 @@ QList<QStringList>* MyDataBase::GetTableColumnName(QString sqlcommand){
 */
 bool MyDataBase::CloseDB(){
     if(!db.open()){
-        qDebug()<<"数据库未打开";
+        qInfo()<<"数据库未打开";
         return true;
     }
     db.close();

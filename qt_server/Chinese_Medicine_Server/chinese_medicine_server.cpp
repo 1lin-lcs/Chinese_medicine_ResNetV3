@@ -10,13 +10,13 @@ Chinese_Medicine_Server::Chinese_Medicine_Server()
 bool Chinese_Medicine_Server::ReadConfig(){
     QFile configFile(QDir::currentPath()+"/configuration.json");
     if(!configFile.open(QIODevice::ReadOnly)){
-        qDebug()<<"打开配置文件失败";
+        qInfo()<<"打开配置文件失败";
         return false;
     }
     QJsonParseError jsonerror;
     QJsonDocument doc(QJsonDocument::fromJson(configFile.readAll(),jsonerror));
     if(!doc.isNull()||jsonerror!=QJsonParseError::NoError){
-        qDebug()<<"读取配置文件失败";
+        qInfo()<<"读取配置文件失败";
         return false;
     }
     QJsonObject top=doc.object();
@@ -42,17 +42,17 @@ bool Chinese_Medicine_Server::ReadConfig(){
 bool Chinese_Medicine_Server::Start(){
     server=new MyTcpServer();
     if(!server->listen(QHostAddress::LocalHost,50002)){
-        qDebug()<<"Server启动失败";
+        qInfo()<<"Server启动失败";
         return false;
     }
     connet(server,&MyTcpServer::SocketDesc,this,&Chinese_Medicine_Server::CreateSocket);
-    qDebug()<<"Server启动成功";
+    qInfo()<<"Server启动成功";
     DataBase=new MyDataBase(Info.HostName,Info.Port,Info.DataBaseName,Info.UserName,Info.PassWord);
     if(!DataBase->LinkDB("User")){                                               //起个名字而已，实际作用是关闭用的
-        qDebug()<<"连接数据库失败";
+        qInfo()<<"连接数据库失败";
         return false;
     }
-    qDebug()<<"连接数据库成功";
+    qInfo()<<"连接数据库成功";
     if(Serverconfig.IsAutoQuit){
         if(Serverconfig.InvervalTime>0)
             Timer.start(Serverconfig.InvervalTime*1000);
@@ -257,6 +257,29 @@ void Chinese_Medicine_Server::TaskIdentify(QJsonDocument* doc, qintptr socketdes
         return;
     }
     response=response.value("response").toObject();
+    QByteArray img=QByteArray::fromBase64(response.value("data").toVariant().toByteArray());
+    QString filetype=response.value("external").toString();
+    QString path = QDir::currentPath() + "/tmp/" + QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss") + filetype;
+    QDir dir;
+    if(!dir.exists(QDir::currentPath()+"/tmp")){
+        dir.mkdir(QDir::currentPath()+"/tmp");
+    }
+    QFile file(path);
+    if(!file.open(QIODevice::WriteOnly)){
+        qInfo()<<"打开文件失败";
+        return;
+    }
+    file.write(img);
+    file.close();
+
+    delete doc;
+
+#ifdef UsePython
+    IdentityThread* thread = new IdentityThread(path,QDir::currentPath(),socket);
+    connect(thread, &IdentityThread::SendEnd,this, &Chinese_Medicine_Server::ReceiveEnd);
+    connect(thread, &IdentityThread::SendError, this,);
+    thread->start();
+#endif
 }
 
 /*! @brief 生成含有错误信息的Json内容
@@ -274,7 +297,7 @@ void Chinese_Medicine_Server::CreateErrorJsonInfo(qintptr socketdesc,QString inf
     top.insert("response",response);
 
     QJsonDocument* doc=new QJsonDocument(top);
-    emit(SendJsonDoc(doc,socketdesc));
+    emit SendJsonDoc(doc,socketdesc);
 }
 
 /*! @brief 生成成功处理后的Json内容
@@ -294,8 +317,29 @@ void Chinese_Medicine_Server::CreateSuccessJsonInfo(qintptr socketdesc, int even
     top.insert("response",response);
 
     QJsonDocument* doc=new QJsonDocument(top);
-    emit(SendJsonDoc(doc,socketdesc));
+    emit SendJsonDoc(doc,socketdesc);
 }
+
+
+#define UsePython
+
+/*! @brief 如果使用的调用Python进行识别，这个函数就是初始化Python环境
+ *  @return true/false 成功初始化Python环境为true，否则false
+*/
+bool Chinese_Medicine_Server::InitPython(){
+    Py_Initialize();
+    if(!Py_IsInitialized()){
+        qInfo()<<"Python环境启动失败";
+        return false;
+    }
+    PyEval_InitThreads();
+    int nInit=PyEval_ThreadsInitialized();
+    if(nInit){
+        PyEval_SaveThread();
+    }
+    return true;
+}
+#endif
 
 
 //normal function
@@ -316,6 +360,15 @@ void Chinese_Medicine_Server::CloseProgram(){
             DataBase->CloseDB();
             delete DataBase;
         }
+
+        QDir path(QDir::currentPath() + "/tmp");
+        path.removeRecursively();
+
+#ifdef UsePython
+        PyGILState_Ensure();
+        Py_Finalize();
+#endif
+
         exit(0);
     }
 }
@@ -356,3 +409,17 @@ void Chinese_Medicine_Server::DeleteSocketThread(){
     thread->deleteLater();
     socketMap.remove(handle);
 }
+
+#ifdef UsePython
+/*! @brief 发送识别结果
+*/
+void Chinese_Medicine_Server::ReceiveEnd(QString end, qintptr socketdesc){
+    CreateSuccessJsonInfo(socketdesc,4,end);
+}
+
+/*! @brief 打印识别错误
+*/
+void Chinese_Medicine_Server::GetThreadError(QString error){
+    qInfo()<<error;
+}
+#endif

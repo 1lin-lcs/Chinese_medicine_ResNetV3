@@ -13,6 +13,11 @@
 #include <QMap>
 
 #define UserTable "user"
+#define UsePython
+
+#ifdef UsePython
+#include "IdentityThread.h"
+#endif
 
 //保存设置的结构体，方便增加设置项
 struct ServerConfig {
@@ -55,11 +60,22 @@ private:
     void TaskIdentify(QJsonDocument*,qintptr);  //图片识别事件
     void CreateErrorJsonInfo(qintptr,QString);  //发生错误时生成回复的Json文档
     void CreateSuccessJsonInfo(qintptr,int,QString);//返回处理成功Json内容
+
+#ifdef UsePython
+    bool InitPython();                          //如果使用Python作为识别，就初始化Python
+#endif
+
 private slots:
     void CloseProgram();                        //自动退出程序!!注意!!这个函数还不完善
     void CreateSocket();                        //创建新的socket，并移入新的线程
     void GetJsonFile(QJsonDocument*,qintptr);   //获得Json文件内容
     void DeleteSocketThread();                  //从socketMap中获得信息，删除没有连接的socket和thread
+
+#ifdef UsePython
+    void ReceiveEnd(QString,qintptr);           //接受识别的信息
+    void GetThreadError(QString);               //接受线程错误信息
+#endif
+
 signals:
     void SendJsonDoc(QJsonDocument*,qintptr);   //发送信号到socket，让socket发送数据
 };
