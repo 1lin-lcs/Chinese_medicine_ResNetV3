@@ -28,3 +28,11 @@ HEADERS += \
     mydatabase.h \
     mytcpserver.h \
     mytcpsocket.h
+
+# 如果使用Python，请添加对应的lib
+
+DEFINES+=UsePython
+
+contains(DEFINES,UsePython){
+    LIBS+=-L$$PWD/Python/libs/ -lpython311
+}
