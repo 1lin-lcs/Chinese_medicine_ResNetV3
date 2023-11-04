@@ -16,18 +16,17 @@ public:
     MyDataBase(QString,int,QString,QString,QString);
     ~MyDataBase();
 
-    bool LinkDB(QString);                           //Á¬½Óµ½Êı¾İ¿â
-    bool InsertData(QString);                       //²åÈëÊı¾İ
-    QString FindSingleData(QString);                //²éÕÒµ¥¸öÊı¾İ
-    QList<QStringList>* FindDatas(QString);         //²éÕÒ¶à¸öÊı¾İ
-    bool UpdataData(QString);                       //¸üĞÂÊı¾İ
-    bool DeleteData(QString);                       //É¾³ıÊı¾İ
-    QStringList* GetDataTableName();                //·µ»ØÊı¾İ¿âËùÓĞ±íµÄÃû³Æ
-    QList<QStringList>* GetTableColumnName(QString);//·µ»ØÁĞµÄÃû³Æ
-    bool CloseDB();                                 //¹Ø±ÕÊı¾İ¿â
+    bool LinkDB(QString);                           //è¿æ¥åˆ°æ•°æ®åº“
+    bool InsertData(QString);                       //æ’å…¥æ•°æ®
+    QString FindSingleData(QString);                //æŸ¥æ‰¾å•ä¸ªæ•°æ®
+    QList<QStringList>* FindDatas(QString);         //æŸ¥æ‰¾å¤šä¸ªæ•°æ®
+    bool UpdataData(QString);                       //æ›´æ–°æ•°æ®
+    bool DeleteData(QString);                       //åˆ é™¤æ•°æ®
+    QStringList* GetDataTableName();                //è¿”å›æ•°æ®åº“æ‰€æœ‰è¡¨çš„åç§°
+    QList<QStringList>* GetTableColumnName(QString);//è¿”å›åˆ—çš„åç§°
+    bool CloseDB();                                 //å…³é—­æ•°æ®åº“
 
 private:
-    QString DataBaseName="";
     QString HostName="";
     int Port=0;
     QString DataBaseName="";

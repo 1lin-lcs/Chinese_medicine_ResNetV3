@@ -13,21 +13,20 @@
 #include <QMap>
 
 #define UserTable "user"
-#define UsePython
 
 #ifdef UsePython
 #include "IdentityThread.h"
 #endif
 
-//±£´æÉèÖÃµÄ½á¹¹Ìå£¬·½±ãÔö¼ÓÉèÖÃÏî
+//ä¿å­˜è®¾ç½®çš„ç»“æ„ä½“ï¼Œæ–¹ä¾¿å¢åŠ è®¾ç½®é¡¹
 struct ServerConfig {
     bool IsAutoQuit;
     int InvervalTime;
     int QuitCoint;
 };
 
-//±£´æ·şÎñ¶ËµÇÂ¼·şÎñÆ÷µÄÉèÖÃ
-//×¢Òâ£¬Õâ¸östruct²»ÒªÊ¹ÓÃmemsetµÈ½ÏµÍ¼¶µÄÄÚ´æ²Ù×÷º¯Êı
+//ä¿å­˜æœåŠ¡ç«¯ç™»å½•æœåŠ¡å™¨çš„è®¾ç½®
+//æ³¨æ„ï¼Œè¿™ä¸ªstructä¸è¦ä½¿ç”¨memsetç­‰è¾ƒä½çº§çš„å†…å­˜æ“ä½œå‡½æ•°
 struct DataBaseInfo{
     QString HostName;
     int Port;
@@ -37,47 +36,47 @@ struct DataBaseInfo{
 };
 
 
-class Chinese_Medicine_Server
+class Chinese_Medicine_Server : public QObject
 {
     Q_OBJECT
 public:
     Chinese_Medicine_Server();
+    bool Start();                                           //å¯åŠ¨ç›‘å¬ï¼Œå¹¶è¿æ¥æ•°æ®åº“
+    bool ReadConfig();                                      //è¯»å–è®¾ç½®
+#ifdef UsePython
+    bool InitPython();                                      //å¦‚æœä½¿ç”¨Pythonä½œä¸ºè¯†åˆ«ï¼Œå°±åˆå§‹åŒ–Python
+#endif
 private:
     MyTcpServer* server=nullptr;
     MyDataBase* DataBase=nullptr;
-    DataBaseInfo Info;                          //±£´æ·şÎñ¶ËµÇÂ¼Êı¾İ¿âµÄĞÅÏ¢
-    ServerConfig Serverconfig;                  //±£´æ·şÎñ¶ËµÄÉèÖÃ
-    QTimer Timer;                               //¼ÆÊ±£¬×Ô¶¯¹Ø±Õ³ÌĞò
-    QMap<qintptr,QMap<MyTcpSocket*,QThread*>> socketMap; //±£´æsocketºÍthreadĞÅÏ¢
+    DataBaseInfo Info;                                      //ä¿å­˜æœåŠ¡ç«¯ç™»å½•æ•°æ®åº“çš„ä¿¡æ¯
+    ServerConfig Serverconfig;                              //ä¿å­˜æœåŠ¡ç«¯çš„è®¾ç½®
+    QTimer Timer;                                           //è®¡æ—¶ï¼Œè‡ªåŠ¨å…³é—­ç¨‹åº
+    QMap<qintptr,QMap<MyTcpSocket*,QThread*>> socketMap;    //ä¿å­˜socketå’Œthreadä¿¡æ¯
 
-    bool Start();                               //Æô¶¯¼àÌı£¬²¢Á¬½ÓÊı¾İ¿â
-    bool ReadConfig();                          //¶ÁÈ¡ÉèÖÃ
-    void Task(QJsonDocument*,qintptr);          //´¦ÀíJsonÎÄ¼şÄÚÈİ
-    void TaskSignIn(QJsonDocument*,qintptr);    //´¦ÀíµÇÂ¼ÊÂ¼ş
-    void TaskSignUp(QJsonDocument*,qintptr);    //´¦Àí×¢²áÊÂ¼ş
-    void ChangePasswd(QJsonDocument*,qintptr);  //´¦ÀíĞŞ¸ÄÃÜÂëÊÂ¼ş
-    void DeleteUser(QJsonDocument*,qintptr);    //×¢ÏúÓÃ»§ÊÂ¼ş
-    void TaskIdentify(QJsonDocument*,qintptr);  //Í¼Æ¬Ê¶±ğÊÂ¼ş
-    void CreateErrorJsonInfo(qintptr,QString);  //·¢Éú´íÎóÊ±Éú³É»Ø¸´µÄJsonÎÄµµ
-    void CreateSuccessJsonInfo(qintptr,int,QString);//·µ»Ø´¦Àí³É¹¦JsonÄÚÈİ
+    void Task(QJsonDocument*,qintptr);             //å¤„ç†Jsonæ–‡ä»¶å†…å®¹
+    void TaskSignIn(QJsonDocument*,qintptr);       //å¤„ç†ç™»å½•äº‹ä»¶
+    void TaskSignUp(QJsonDocument*,qintptr);       //å¤„ç†æ³¨å†Œäº‹ä»¶
+    void ChangePasswd(QJsonDocument*,qintptr);     //å¤„ç†ä¿®æ”¹å¯†ç äº‹ä»¶
+    void DeleteUser(QJsonDocument*,qintptr);       //æ³¨é”€ç”¨æˆ·äº‹ä»¶
+    void TaskIdentify(QJsonDocument*,qintptr);     //å›¾ç‰‡è¯†åˆ«äº‹ä»¶
+    void CreateErrorJsonInfo(qintptr,QString);              //å‘ç”Ÿé”™è¯¯æ—¶ç”Ÿæˆå›å¤çš„Jsonæ–‡æ¡£
+    void CreateSuccessJsonInfo(qintptr,int,QString);        //è¿”å›å¤„ç†æˆåŠŸJsonå†…å®¹
 
-#ifdef UsePython
-    bool InitPython();                          //Èç¹ûÊ¹ÓÃPython×÷ÎªÊ¶±ğ£¬¾Í³õÊ¼»¯Python
-#endif
 
 private slots:
-    void CloseProgram();                        //×Ô¶¯ÍË³ö³ÌĞò!!×¢Òâ!!Õâ¸öº¯Êı»¹²»ÍêÉÆ
-    void CreateSocket();                        //´´½¨ĞÂµÄsocket£¬²¢ÒÆÈëĞÂµÄÏß³Ì
-    void GetJsonFile(QJsonDocument*,qintptr);   //»ñµÃJsonÎÄ¼şÄÚÈİ
-    void DeleteSocketThread();                  //´ÓsocketMapÖĞ»ñµÃĞÅÏ¢£¬É¾³ıÃ»ÓĞÁ¬½ÓµÄsocketºÍthread
+    void CloseProgram();                                    //è‡ªåŠ¨é€€å‡ºç¨‹åº!!æ³¨æ„!!è¿™ä¸ªå‡½æ•°è¿˜ä¸å®Œå–„
+    void CreateSocket(qintptr);                             //åˆ›å»ºæ–°çš„socketï¼Œå¹¶ç§»å…¥æ–°çš„çº¿ç¨‹
+    void GetJsonFile(QJsonDocument*,qintptr);      //è·å¾—Jsonæ–‡ä»¶å†…å®¹
+    void DeleteSocketThread();                              //ä»socketMapä¸­è·å¾—ä¿¡æ¯ï¼Œåˆ é™¤æ²¡æœ‰è¿æ¥çš„socketå’Œthread
 
 #ifdef UsePython
-    void ReceiveEnd(QString,qintptr);           //½ÓÊÜÊ¶±ğµÄĞÅÏ¢
-    void GetThreadError(QString);               //½ÓÊÜÏß³Ì´íÎóĞÅÏ¢
+    void ReceiveEnd(QString,qintptr);                       //æ¥å—è¯†åˆ«çš„ä¿¡æ¯
+    void GetThreadError(QString);                           //æ¥å—çº¿ç¨‹é”™è¯¯ä¿¡æ¯
 #endif
 
 signals:
-    void SendJsonDoc(QJsonDocument*,qintptr);   //·¢ËÍĞÅºÅµ½socket£¬ÈÃsocket·¢ËÍÊı¾İ
+    void SendJsonDoc(QJsonDocument*,qintptr);      //å‘é€ä¿¡å·åˆ°socketï¼Œè®©socketå‘é€æ•°æ®
 };
 
 #endif // CHINESE_MEDICINE_SERVER_H

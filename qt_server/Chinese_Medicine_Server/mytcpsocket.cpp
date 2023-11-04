@@ -3,26 +3,31 @@
 MyTcpSocket::MyTcpSocket()
 {}
 
-/*! @brief ÕâÊÇÉèÖÃsocketdescriptµÄ¹¹Ôìº¯Êı
+/*! @brief è¿™æ˜¯è®¾ç½®socketdescriptçš„æ„é€ å‡½æ•°
 */
 MyTcpSocket::MyTcpSocket(qintptr socketdesc){
     socketDesc=socketdesc;
     this->setSocketDescriptor(socketdesc);
 }
 
-/*! @brief ÕâÊÇÓÃÀ´´¦ÀíÊÜµ½Êı¾İÊÇ·ñÊÇÒ»¸öÍêÕûµÄJsonÎÄ¼şµÄº¯Êı
+/*! @brief è¿™æ˜¯ææ„å‡½æ•°ï¼Œç”¨æ¥é‡Šæ”¾æ•°æ®çš„
+*/
+MyTcpSocket::~MyTcpSocket(){}
+
+/*! @brief è¿™æ˜¯ç”¨æ¥å¤„ç†å—åˆ°æ•°æ®æ˜¯å¦æ˜¯ä¸€ä¸ªå®Œæ•´çš„Jsonæ–‡ä»¶çš„å‡½æ•°
 */
 void MyTcpSocket::GetJsonFile(){
-    JsonData->append(this->readAll());
-    QJsonDocument doc=QJsonDocument(QJsonDocument::fromJson(JsonData,&JsonError));
-    if(doc.isNull()||JsonError.error!=QJsonParseError::NoError){
+    JsonData.append(this->readAll());
+    QJsonDocument* doc=new QJsonDocument(QJsonDocument::fromJson(JsonData,&JsonError));
+    if(doc->isNull()||JsonError.error!=QJsonParseError::NoError){
+        delete doc;
         return;
     }
     emit SendJsonFile(doc,socketDesc);
     JsonData.clear();
 }
 
-/*! @brief ÕâÊÇ·¢ËÍÊı¾İÓÃµÄ
+/*! @brief è¿™æ˜¯å‘é€æ•°æ®ç”¨çš„
 */
 void MyTcpSocket::SendData(QJsonDocument* doc, qintptr socketdesc){
     if(socketdesc==socketDesc){
@@ -32,8 +37,8 @@ void MyTcpSocket::SendData(QJsonDocument* doc, qintptr socketdesc){
     }
 }
 
-/*! @brief »ñµÃdescÃèÊö·û
- *  @return socketDesc socketÃèÊö·û
+/*! @brief è·å¾—descæè¿°ç¬¦
+ *  @return socketDesc socketæè¿°ç¬¦
 */
 qintptr MyTcpSocket::GetDesc(){
     return socketDesc;

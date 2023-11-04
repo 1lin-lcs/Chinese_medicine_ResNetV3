@@ -3,11 +3,11 @@
 MyTcpServer::MyTcpServer()
 {}
 
-/*! @brief 这个覆盖原来的虚函数，为了实现多线程，得到socketDescriptor，也称为handle
- * @param handle 就是socketDescriptor
- * @note 官方文档 socketDescriptor argument is the native socket descriptor for the accepted connection
+/*! @brief 杩欎釜瑕嗙洊鍘熸潵鐨勮櫄鍑芥暟锛屼负浜嗗疄鐜板绾跨▼锛屽緱鍒皊ocketDescriptor锛屼篃绉颁负handle
+ * @param handle 灏辨槸socketDescriptor
+ * @note 瀹樻柟鏂囨。 socketDescriptor argument is the native socket descriptor for the accepted connection
  */
-void MyTcpServer::incomingConnection(qintptr handle){
+void MyTcpServer::imcomingConnection(qintptr handle){
     emit SocketDesc(handle);
     emit newConnection();
 }

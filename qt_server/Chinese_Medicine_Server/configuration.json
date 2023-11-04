@@ -3,7 +3,7 @@
 		"IsAutoQuit":true,
 		"InvervalTime":10,
 		"QuitCoint":5
-	}
+	},
 	"DataBaseUser":{
 		"HostName":"localhost",
 		"Port":3306,

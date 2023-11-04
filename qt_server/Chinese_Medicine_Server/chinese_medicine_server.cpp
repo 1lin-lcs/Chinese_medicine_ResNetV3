@@ -3,20 +3,21 @@
 Chinese_Medicine_Server::Chinese_Medicine_Server()
 {}
 
-/*! @brief ÕâÊÇ¶ÁÈ¡ÅäÖÃÎÄ¼şÓÃµÄ
- *  @note Ä¬ÈÏ¶ÁÈ¡Ä¿Â¼ÏÂµÄconfiguration.jsonÎÄ¼ş
- *  @return true/false ¶ÁÈ¡³É¹¦¾Í·µ»Øtrue£¬·ñÔòfalse
+/*! @brief è¿™æ˜¯è¯»å–é…ç½®æ–‡ä»¶ç”¨çš„
+ *  @note é»˜è®¤è¯»å–ç›®å½•ä¸‹çš„configuration.jsonæ–‡ä»¶
+ *  @return true/false è¯»å–æˆåŠŸå°±è¿”å›trueï¼Œå¦åˆ™false
 */
 bool Chinese_Medicine_Server::ReadConfig(){
     QFile configFile(QDir::currentPath()+"/configuration.json");
     if(!configFile.open(QIODevice::ReadOnly)){
-        qInfo()<<"´ò¿ªÅäÖÃÎÄ¼şÊ§°Ü";
+        qInfo()<<"æ‰“å¼€é…ç½®æ–‡ä»¶å¤±è´¥";
         return false;
     }
     QJsonParseError jsonerror;
-    QJsonDocument doc(QJsonDocument::fromJson(configFile.readAll(),jsonerror));
-    if(!doc.isNull()||jsonerror!=QJsonParseError::NoError){
-        qInfo()<<"¶ÁÈ¡ÅäÖÃÎÄ¼şÊ§°Ü";
+    QJsonDocument doc(QJsonDocument::fromJson(configFile.readAll(),&jsonerror));
+    if(doc.isNull()||jsonerror.error!=QJsonParseError::NoError){
+        qInfo()<<"è¯»å–é…ç½®æ–‡ä»¶å¤±è´¥";
+        qInfo()<<jsonerror.errorString();
         return false;
     }
     QJsonObject top=doc.object();
@@ -35,24 +36,23 @@ bool Chinese_Medicine_Server::ReadConfig(){
     return true;
 }
 
-/*! @brief ÕâÊÇÆô¶¯·şÎñ£¬½øĞĞ¼àÌı£¬²¢Á¬½ÓÊı¾İ¿â
- *  @note È·±£ReadConfig()º¯ÊıÓĞÔËĞĞÇÒ³É¹¦£¬·ñÔò³öÏÖ´íÎó
- *  @return true/false£¬Æô¶¯³É¹¦¾ÍÊÇtrue£¬·ñÔòfalse
+/*! @brief è¿™æ˜¯å¯åŠ¨æœåŠ¡ï¼Œè¿›è¡Œç›‘å¬ï¼Œå¹¶è¿æ¥æ•°æ®åº“
+ *  @note ç¡®ä¿ReadConfig()å‡½æ•°æœ‰è¿è¡Œä¸”æˆåŠŸï¼Œå¦åˆ™å‡ºç°é”™è¯¯
+ *  @return true/falseï¼Œå¯åŠ¨æˆåŠŸå°±æ˜¯trueï¼Œå¦åˆ™false
 */
 bool Chinese_Medicine_Server::Start(){
     server=new MyTcpServer();
     if(!server->listen(QHostAddress::LocalHost,50002)){
-        qInfo()<<"ServerÆô¶¯Ê§°Ü";
+        qInfo()<<"Serverå¯åŠ¨å¤±è´¥";
         return false;
     }
-    connet(server,&MyTcpServer::SocketDesc,this,&Chinese_Medicine_Server::CreateSocket);
-    qInfo()<<"ServerÆô¶¯³É¹¦";
+    connect(server,&MyTcpServer::SocketDesc,this,&Chinese_Medicine_Server::CreateSocket);
+    qInfo()<<"Serverå¯åŠ¨æˆåŠŸ";
     DataBase=new MyDataBase(Info.HostName,Info.Port,Info.DataBaseName,Info.UserName,Info.PassWord);
-    if(!DataBase->LinkDB("User")){                                               //Æğ¸öÃû×Ö¶øÒÑ£¬Êµ¼Ê×÷ÓÃÊÇ¹Ø±ÕÓÃµÄ
-        qInfo()<<"Á¬½ÓÊı¾İ¿âÊ§°Ü";
+    if(!DataBase->LinkDB("User")){                                               //èµ·ä¸ªåå­—è€Œå·²ï¼Œå®é™…ä½œç”¨æ˜¯å…³é—­ç”¨çš„
+        qInfo()<<"è¿æ¥æ•°æ®åº“å¤±è´¥";
         return false;
     }
-    qInfo()<<"Á¬½ÓÊı¾İ¿â³É¹¦";
     if(Serverconfig.IsAutoQuit){
         if(Serverconfig.InvervalTime>0)
             Timer.start(Serverconfig.InvervalTime*1000);
@@ -60,20 +60,21 @@ bool Chinese_Medicine_Server::Start(){
             Timer.start(10*1000);
         connect(&Timer,&QTimer::timeout,this,&Chinese_Medicine_Server::CloseProgram);
     }
+    return true;
 }
 
-/*! @brief ÕâÊÇ´¦ÀíJsonÎÄ¼şÄÚÈİµÄº¯Êı
- *  @param doc ´Ósocket·¢À´µÄJsonÎÄ¼şµÄÖ¸Õë
- *  @param socketdesc socketµÄÃèÊö·û
- *  @note ×¢Òâ¼°Ê±Çå³ıÖ¸ÕëµÄÄÚÈİ
+/*! @brief è¿™æ˜¯å¤„ç†Jsonæ–‡ä»¶å†…å®¹çš„å‡½æ•°
+ *  @param doc ä»socketå‘æ¥çš„Jsonæ–‡ä»¶çš„æŒ‡é’ˆ
+ *  @param socketdesc socketçš„æè¿°ç¬¦
+ *  @note æ³¨æ„åŠæ—¶æ¸…é™¤æŒ‡é’ˆçš„å†…å®¹
 */
-void Chinese_Medicine_Server::Task(QJsonDocument* doc, qintptr socketdesc){
+void Chinese_Medicine_Server::Task(QJsonDocument *doc, qintptr socketdesc){
     QJsonObject obj=doc->object();
     QJsonObject status;
     if(!obj.contains("status")){
-        CreateErrorJsonInfo(socketdesc,"ĞÅÏ¢È±Ê§");
+        CreateErrorJsonInfo(socketdesc,"ä¿¡æ¯ç¼ºå¤±");
         delete doc;
-        rerurn;
+        return;
     }
     status=obj.value("status").toObject();
     if(status.value("error").toInt()!=0){
@@ -86,18 +87,18 @@ void Chinese_Medicine_Server::Task(QJsonDocument* doc, qintptr socketdesc){
     case 2:ChangePasswd(doc,socketdesc);break;
     case 3:DeleteUser(doc,socketdesc);break;
     case 4:TaskIdentify(doc,socketdesc);break;
-    default:CreateErrorJsonInfo(socketdesc,"ÊÂ¼ş´íÎó");break;
+    default:CreateErrorJsonInfo(socketdesc,"äº‹ä»¶é”™è¯¯");delete doc;break;
     }
 }
 
-/*! @brief ´¦ÀíµÇÂ¼ÊÂ¼ş
- *  @param doc JsonĞÅÏ¢
- *  @param socketdesc socketµÄÃèÊö×Ö·û
+/*! @brief å¤„ç†ç™»å½•äº‹ä»¶
+ *  @param doc Jsonä¿¡æ¯
+ *  @param socketdesc socketçš„æè¿°å­—ç¬¦
 */
-void Chinese_Medicine_Server::TaskSignIn(QJsonDocument* doc, qintptr socketdesc){
+void Chinese_Medicine_Server::TaskSignIn(QJsonDocument *doc, qintptr socketdesc){
     QJsonObject information=doc->object();
     if(!information.contains("information")){
-        CreateErrorJsonInfo(socketdesc,"È±Ê§information¼ü");
+        CreateErrorJsonInfo(socketdesc,"ç¼ºå¤±informationé”®");
         delete doc;
         return;
     }
@@ -108,7 +109,7 @@ void Chinese_Medicine_Server::TaskSignIn(QJsonDocument* doc, qintptr socketdesc)
 
     QString sql1=QString("select username from %1 where username=\"%2\"").arg(UserTable,user);
     if(DataBase->FindSingleData(sql1)==""){
-        CreateErrorJsonInfo(socketdesc,"ÎŞ´ËÓÃ»§");
+        CreateErrorJsonInfo(socketdesc,"æ— æ­¤ç”¨æˆ·");
         delete doc;
         return;
     }
@@ -117,29 +118,29 @@ void Chinese_Medicine_Server::TaskSignIn(QJsonDocument* doc, qintptr socketdesc)
     QString res=DataBase->FindSingleData(sql2);
 
     if(res==""){
-        CreateErrorJsonInfo(socketdesc,"Ã»ÓĞÉèÖÃÃÜÂë");
+        CreateErrorJsonInfo(socketdesc,"æ²¡æœ‰è®¾ç½®å¯†ç ");
         delete doc;
         return;
     }
 
     if(res.compare(passwd)!=0){
-        CreateErrorJsonInfo(socketdesc,"ÃÜÂë´íÎó");
+        CreateErrorJsonInfo(socketdesc,"å¯†ç é”™è¯¯");
         delete doc;
         return;
     }
 
-    CreateSuccessJsonInfo(socketdesc,0,"»ñµÃÕË»§ĞÅÏ¢³É¹¦£¬¿ÉÒÔµÇÂ¼");
+    CreateSuccessJsonInfo(socketdesc,0,"è·å¾—è´¦æˆ·ä¿¡æ¯æˆåŠŸï¼Œå¯ä»¥ç™»å½•");
     delete doc;
 }
 
-/*! @brief ´¦Àí×¢²áµÄÊÂ¼ş
- *  @param doc JsonÎÄµµµÄÄÚÈİ
- *  @param socketdesc socketµÄÃèÊö·û
+/*! @brief å¤„ç†æ³¨å†Œçš„äº‹ä»¶
+ *  @param doc Jsonæ–‡æ¡£çš„å†…å®¹
+ *  @param socketdesc socketçš„æè¿°ç¬¦
 */
-void Chinese_Medicine_Server::TaskSignUp(QJsonDocument* doc, qintptr socketdesc){
+void Chinese_Medicine_Server::TaskSignUp(QJsonDocument *doc, qintptr socketdesc){
     QJsonObject information=doc->object();
     if(!information.contains("information")){
-        CreateErrorJsonInfo(socketdesc,"ÄÚÈİÈ±Ê§");
+        CreateErrorJsonInfo(socketdesc,"å†…å®¹ç¼ºå¤±");
         delete doc;
         return;
     }
@@ -148,7 +149,7 @@ void Chinese_Medicine_Server::TaskSignUp(QJsonDocument* doc, qintptr socketdesc)
     QString username=information.value("username").toString();
     QString sql1=QString("select username from %1 where username=\"%2\"").arg(UserTable,username);
     if(DataBase->FindSingleData(sql1)!=""){
-        CreateErrorJsonInfo(socketdesc,"ÓÃ»§ÒÑ´æÔÚ");
+        CreateErrorJsonInfo(socketdesc,"ç”¨æˆ·å·²å­˜åœ¨");
         delete doc;
         return;
     }
@@ -157,25 +158,25 @@ void Chinese_Medicine_Server::TaskSignUp(QJsonDocument* doc, qintptr socketdesc)
     QString email=information.value("email").toString();
     QString sql2=QString("insert into %1 (username,password,email,create_time) values ('%2','%3','%4',now())").arg(UserTable,username,passwd,email);
     if(DataBase->InsertData(sql2)){
-        CreateSuccessJsonInfo(socketdesc,1,"×¢²á³É¹¦");
+        CreateSuccessJsonInfo(socketdesc,1,"æ³¨å†ŒæˆåŠŸ");
         delete doc;
         return;
     }
     else{
-        CreateErrorJsonInfo(socketdesc,"×¢²áÊ§°Ü£¬·şÎñ¶ËµÄÎÊÌâ");
+        CreateErrorJsonInfo(socketdesc,"æ³¨å†Œå¤±è´¥ï¼ŒæœåŠ¡ç«¯çš„é—®é¢˜");
         delete doc;
         return;
     }
 }
 
-/*! @brief ´¦ÀíĞŞ¸ÄÃÜÂëÊÂ¼ş
- *  @param doc JsonÎÄµµµÄÄÚÈİ
- *  @param socketdesc socketµÄÃèÊö·û
+/*! @brief å¤„ç†ä¿®æ”¹å¯†ç äº‹ä»¶
+ *  @param doc Jsonæ–‡æ¡£çš„å†…å®¹
+ *  @param socketdesc socketçš„æè¿°ç¬¦
 */
 void Chinese_Medicine_Server::ChangePasswd(QJsonDocument* doc, qintptr socketdesc){
     QJsonObject information=doc->object();
     if(!information.contains("information")){
-        CreateErrorJsonInfo(socketdesc,"ÄÚÈİÈ±Ê§");
+        CreateErrorJsonInfo(socketdesc,"å†…å®¹ç¼ºå¤±");
         delete doc;
         return;
     }
@@ -184,8 +185,8 @@ void Chinese_Medicine_Server::ChangePasswd(QJsonDocument* doc, qintptr socketdes
 
     QString user=information.value("username").toString();
     QString sql1=QString("select username from %1 where username=\"%2\"").arg(UserTable,user);
-    if(DataBase->FindDatas(sql1)==""){
-        CreateErrorJsonInfo(socketdesc,"ÓÃ»§²»´æÔÚ");
+    if(DataBase->FindSingleData(sql1)==""){
+        CreateErrorJsonInfo(socketdesc,"ç”¨æˆ·ä¸å­˜åœ¨");
         delete doc;
         return;
     }
@@ -194,31 +195,31 @@ void Chinese_Medicine_Server::ChangePasswd(QJsonDocument* doc, qintptr socketdes
     QString sql2=QString("select password from %1 where username=\"%2\"").arg(UserTable,user);
     QString res=DataBase->FindSingleData(sql2);
     if(passwd!=res){
-        CreateErrorJsonInfo(socketdesc,"Ô­ÃÜÂë´íÎó");
+        CreateErrorJsonInfo(socketdesc,"åŸå¯†ç é”™è¯¯");
         delete doc;
         return;
     }
     QString sql3=QString("update %1 set password=\"%2\" where username = \"%3\"").arg(UserTable,passwd,user);
     if(DataBase->UpdataData(sql3)){
-        CreateSuccessJsonInfo(socketdesc,2,"ĞŞ¸Ä³É¹¦");
+        CreateSuccessJsonInfo(socketdesc,2,"ä¿®æ”¹æˆåŠŸ");
         delete doc;
         return;
     }
     else{
-        CreateErrorJsonInfo(socketdesc,"ĞŞ¸ÄÊ§°Ü£¬·şÎñ¶ËµÄÎÊÌâ");
+        CreateErrorJsonInfo(socketdesc,"ä¿®æ”¹å¤±è´¥ï¼ŒæœåŠ¡ç«¯çš„é—®é¢˜");
         delete doc;
         return;
     }
 }
 
-/*! @brief ´¦Àí×¢ÏúÓÃ»§ÊÂ¼ş
- *  @param doc JsonÎÄµµµÄÄÚÈİ
- *  @param socketdesc socketµÄÃèÊö·û
+/*! @brief å¤„ç†æ³¨é”€ç”¨æˆ·äº‹ä»¶
+ *  @param doc Jsonæ–‡æ¡£çš„å†…å®¹
+ *  @param socketdesc socketçš„æè¿°ç¬¦
 */
-void Chinese_Medicine_Server::DeleteUser(QJsonDocument* doc, qintptr socketdesc){
+void Chinese_Medicine_Server::DeleteUser(QJsonDocument *doc, qintptr socketdesc){
     QJsonObject information=doc->object();
     if(!information.contains("information")){
-        CreateErrorJsonInfo(socketdesc,"ÄÚÈİÈ±Ê§");
+        CreateErrorJsonInfo(socketdesc,"å†…å®¹ç¼ºå¤±");
         delete doc;
         return;
     }
@@ -226,33 +227,33 @@ void Chinese_Medicine_Server::DeleteUser(QJsonDocument* doc, qintptr socketdesc)
     information=information.value("information").toObject();
     QString user=information.value("username").toString();
     QString sql1=QString("select username from %1 where username=\"%2\"").arg(UserTable,user);
-    if(DataBase->FindDatas(sql1)==""){
-        CreateErrorJsonInfo(socketdesc,"ÓÃ»§²»´æÔÚ");
+    if(DataBase->FindSingleData(sql1)==""){
+        CreateErrorJsonInfo(socketdesc,"ç”¨æˆ·ä¸å­˜åœ¨");
         delete doc;
         return;
     }
 
     QString sql2=QString("delete from %1 where username=\"%2\"").arg(UserTable,user);
     if(DataBase->DeleteData(sql2)){
-        CreateSuccessJsonInfo(socketdesc,3,"×¢Ïú³É¹¦");
+        CreateSuccessJsonInfo(socketdesc,3,"æ³¨é”€æˆåŠŸ");
         delete doc;
         return;
     }
     else{
-        CreateErrorJsonInfo(socketdesc,"×¢ÏúÊ§°Ü£¬·şÎñ¶ËµÄÎÊÌâ");
+        CreateErrorJsonInfo(socketdesc,"æ³¨é”€å¤±è´¥ï¼ŒæœåŠ¡ç«¯çš„é—®é¢˜");
         delete doc;
         return;
     }
 }
 
-/*! @brief ´¦ÀíÍ¼Æ¬Ê¶±ğÊÂ¼ş
- *  @param doc JsonÎÄµµµÄÄÚÈİ
- *  @param socketdesc socketµÄÃèÊö·û
+/*! @brief å¤„ç†å›¾ç‰‡è¯†åˆ«äº‹ä»¶
+ *  @param doc Jsonæ–‡æ¡£çš„å†…å®¹
+ *  @param socketdesc socketçš„æè¿°ç¬¦
 */
-void Chinese_Medicine_Server::TaskIdentify(QJsonDocument* doc, qintptr socketdesc){
+void Chinese_Medicine_Server::TaskIdentify(QJsonDocument *doc, qintptr socketdesc){
     QJsonObject response=doc->object();
     if(!response.contains("response")){
-        CreateErrorJsonInfo(socketdesc,"ÄÚÈİÈ±Ê§");
+        CreateErrorJsonInfo(socketdesc,"å†…å®¹ç¼ºå¤±");
         delete doc;
         return;
     }
@@ -266,7 +267,7 @@ void Chinese_Medicine_Server::TaskIdentify(QJsonDocument* doc, qintptr socketdes
     }
     QFile file(path);
     if(!file.open(QIODevice::WriteOnly)){
-        qInfo()<<"´ò¿ªÎÄ¼şÊ§°Ü";
+        qInfo()<<"æ‰“å¼€æ–‡ä»¶å¤±è´¥";
         return;
     }
     file.write(img);
@@ -275,16 +276,16 @@ void Chinese_Medicine_Server::TaskIdentify(QJsonDocument* doc, qintptr socketdes
     delete doc;
 
 #ifdef UsePython
-    IdentityThread* thread = new IdentityThread(path,QDir::currentPath(),socket);
+    IdentityThread* thread = new IdentityThread(path,QDir::currentPath(),socketdesc);
     connect(thread, &IdentityThread::SendEnd,this, &Chinese_Medicine_Server::ReceiveEnd);
-    connect(thread, &IdentityThread::SendError, this,);
+    connect(thread, &IdentityThread::SendError, this,&Chinese_Medicine_Server::GetThreadError);
     thread->start();
 #endif
 }
 
-/*! @brief Éú³Éº¬ÓĞ´íÎóĞÅÏ¢µÄJsonÄÚÈİ
- *  @param socketdesc socketµÄÃèÊö×Ö·û
- *  @param info Ğ´ÈëresponseµÄÄÚÈİ
+/*! @brief ç”Ÿæˆå«æœ‰é”™è¯¯ä¿¡æ¯çš„Jsonå†…å®¹
+ *  @param socketdesc socketçš„æè¿°å­—ç¬¦
+ *  @param info å†™å…¥responseçš„å†…å®¹
 */
 void Chinese_Medicine_Server::CreateErrorJsonInfo(qintptr socketdesc,QString info){
     QJsonObject top,status,response;
@@ -300,10 +301,10 @@ void Chinese_Medicine_Server::CreateErrorJsonInfo(qintptr socketdesc,QString inf
     emit SendJsonDoc(doc,socketdesc);
 }
 
-/*! @brief Éú³É³É¹¦´¦ÀíºóµÄJsonÄÚÈİ
- *  @param socketdesc socketµÄÃèÊö×Ö·û
- *  @param event ÊÂ¼şÀàĞÍ
- *  @param info Ğ´ÈëresponseµÄÄÚÈİ
+/*! @brief ç”ŸæˆæˆåŠŸå¤„ç†åçš„Jsonå†…å®¹
+ *  @param socketdesc socketçš„æè¿°å­—ç¬¦
+ *  @param event äº‹ä»¶ç±»å‹
+ *  @param info å†™å…¥responseçš„å†…å®¹
 */
 void Chinese_Medicine_Server::CreateSuccessJsonInfo(qintptr socketdesc, int event, QString info){
     QJsonObject top,status,response;
@@ -321,15 +322,15 @@ void Chinese_Medicine_Server::CreateSuccessJsonInfo(qintptr socketdesc, int even
 }
 
 
-#define UsePython
+#ifdef UsePython
 
-/*! @brief Èç¹ûÊ¹ÓÃµÄµ÷ÓÃPython½øĞĞÊ¶±ğ£¬Õâ¸öº¯Êı¾ÍÊÇ³õÊ¼»¯Python»·¾³
- *  @return true/false ³É¹¦³õÊ¼»¯Python»·¾³Îªtrue£¬·ñÔòfalse
+/*! @brief å¦‚æœä½¿ç”¨çš„è°ƒç”¨Pythonè¿›è¡Œè¯†åˆ«ï¼Œè¿™ä¸ªå‡½æ•°å°±æ˜¯åˆå§‹åŒ–Pythonç¯å¢ƒ
+ *  @return true/false æˆåŠŸåˆå§‹åŒ–Pythonç¯å¢ƒä¸ºtrueï¼Œå¦åˆ™false
 */
 bool Chinese_Medicine_Server::InitPython(){
     Py_Initialize();
     if(!Py_IsInitialized()){
-        qInfo()<<"Python»·¾³Æô¶¯Ê§°Ü";
+        qInfo()<<"Pythonç¯å¢ƒå¯åŠ¨å¤±è´¥";
         return false;
     }
     PyEval_InitThreads();
@@ -347,11 +348,11 @@ bool Chinese_Medicine_Server::InitPython(){
 //slot function
 
 
-/*! @brief ×Ô¶¯ÍË³ö³ÌĞò
- *  @attention Õâ¸öº¯Êı»¹²»ÍêÉÆ
+/*! @brief è‡ªåŠ¨é€€å‡ºç¨‹åº
+ *  @attention è¿™ä¸ªå‡½æ•°è¿˜ä¸å®Œå–„
 */
 void Chinese_Medicine_Server::CloseProgram(){
-    if((ServerConfig.QuitCoint--)<0){
+    if((Serverconfig.QuitCoint--)<0){
         if(server!=nullptr||server->isListening()){
             server->close();
             delete server;
@@ -373,7 +374,7 @@ void Chinese_Medicine_Server::CloseProgram(){
     }
 }
 
-/*! @brief ´´½¨ĞÂµÄsocket²¢ÒÆÈëĞÂÏß³Ì´¦Àí
+/*! @brief åˆ›å»ºæ–°çš„socketå¹¶ç§»å…¥æ–°çº¿ç¨‹å¤„ç†
 */
 void Chinese_Medicine_Server::CreateSocket(qintptr socketdesc){
     MyTcpSocket* socket=new MyTcpSocket(socketdesc);
@@ -386,22 +387,23 @@ void Chinese_Medicine_Server::CreateSocket(qintptr socketdesc){
     QThread* thread=new QThread(this);
     socket->moveToThread(thread);
 
-    QMap<MyTcpSocket*,QThread*> map(socket,thread);
+    QMap<MyTcpSocket*,QThread*> map;
+    map.insert(socket,thread);
     socketMap.insert(socketdesc,map);
 }
 
-/*! @brief ½ÓÊÜ´Ósocket´«À´µÄJsonÎÄ¼ş
- *  @param doc ´Ósocket·¢À´µÄJsonÎÄ¼şµÄÖ¸Õë
- *  @param socketdesc socketµÄÃèÊö·û
+/*! @brief æ¥å—ä»socketä¼ æ¥çš„Jsonæ–‡ä»¶
+ *  @param doc ä»socketå‘æ¥çš„Jsonæ–‡ä»¶çš„æŒ‡é’ˆ
+ *  @param socketdesc socketçš„æè¿°ç¬¦
 */
-void Chinese_Medicine_Server::GetJsonFile(QJsonDocument* doc,qintptr socketdesc){
+void Chinese_Medicine_Server::GetJsonFile(/*QJsonDocument* */QJsonDocument *doc, qintptr socketdesc){
     Task(doc,socketdesc);
 }
 
-/*! @brief É¾³ıÃ»ÓĞÁ¬½ÓµÄsocketºÍthread
+/*! @brief åˆ é™¤æ²¡æœ‰è¿æ¥çš„socketå’Œthread
 */
 void Chinese_Medicine_Server::DeleteSocketThread(){
-    MyTcpSocket* socket=(MyTcpServer*)sender();
+    MyTcpSocket* socket=(MyTcpSocket*)sender();
     qintptr handle=socket->GetDesc();
     QMap temp=socketMap.value(handle);
     QThread* thread=temp.value(socket);
@@ -411,13 +413,13 @@ void Chinese_Medicine_Server::DeleteSocketThread(){
 }
 
 #ifdef UsePython
-/*! @brief ·¢ËÍÊ¶±ğ½á¹û
+/*! @brief å‘é€è¯†åˆ«ç»“æœ
 */
 void Chinese_Medicine_Server::ReceiveEnd(QString end, qintptr socketdesc){
     CreateSuccessJsonInfo(socketdesc,4,end);
 }
 
-/*! @brief ´òÓ¡Ê¶±ğ´íÎó
+/*! @brief æ‰“å°è¯†åˆ«é”™è¯¯
 */
 void Chinese_Medicine_Server::GetThreadError(QString error){
     qInfo()<<error;

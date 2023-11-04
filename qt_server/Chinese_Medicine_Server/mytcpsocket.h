@@ -14,14 +14,15 @@ public:
     MyTcpSocket();
     MyTcpSocket(qintptr);
     qintptr GetDesc();
+    ~MyTcpSocket();
 private:
-    QByteArray* JsonData=new QByteArray();
+    QByteArray JsonData;
     QJsonParseError JsonError;
 
     qintptr socketDesc;
-private slots:
-    void GetJsonFile();        //´¦ÀíÊÇ·ñÊÕµ½ÍêÕûµÄJsonÎÄ¼ş
-    void SendData(QJsonDocument*,qintptr);
+public slots:
+    void GetJsonFile();                     //å¤„ç†æ˜¯å¦æ”¶åˆ°å®Œæ•´çš„Jsonæ–‡ä»¶
+    void SendData(QJsonDocument*,qintptr);  //å‘é€æœåŠ¡å™¨ç”Ÿæˆçš„æ•°æ®
 signals:
     void SendJsonFile(QJsonDocument*,qintptr);
 };

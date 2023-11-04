@@ -9,12 +9,12 @@ MyDataBase::~MyDataBase(){
         QSqlDatabase::removeDatabase(DataBaseName);
 }
 
-/*! @brief ÕâÊÇÓÃÀ´³õÊ¼»¯ÒªÁ¬½ÓÊı¾İ¿âµÄĞÅÏ¢
-* @param hostname Êı¾İ¿âËùÔÚµØÖ·
-* @param port Êı¾İ¿â¶Ë¿Ú
-* @param databaseName Á¬½ÓµÄÊı¾İ¿âµÄÃû³Æ
-* @param username µÇÂ¼ÓÃ»§µÄÃû³Æ
-* @param password µÇÂ¼ÓÃ»§µÄÃÜÂë
+/*! @brief è¿™æ˜¯ç”¨æ¥åˆå§‹åŒ–è¦è¿æ¥æ•°æ®åº“çš„ä¿¡æ¯
+* @param hostname æ•°æ®åº“æ‰€åœ¨åœ°å€
+* @param port æ•°æ®åº“ç«¯å£
+* @param databaseName è¿æ¥çš„æ•°æ®åº“çš„åç§°
+* @param username ç™»å½•ç”¨æˆ·çš„åç§°
+* @param password ç™»å½•ç”¨æˆ·çš„å¯†ç 
 */
 MyDataBase::MyDataBase(QString hostname,int port,QString databaseName,QString username,QString password){
     HostName=hostname;
@@ -24,9 +24,9 @@ MyDataBase::MyDataBase(QString hostname,int port,QString databaseName,QString us
     PassWord=password;
 }
 
-/*! @brief Á¬½ÓÊı¾İ¿â
- *  @param name ÉèÖÃÁ¬½ÓÊı¾İ¿âµÄÃû³Æ
- *  @return true/false Á¬½Ó³É¹¦·µ»Øtrue£¬·ñÔòfalse
+/*! @brief è¿æ¥æ•°æ®åº“
+ *  @param name è®¾ç½®è¿æ¥æ•°æ®åº“çš„åç§°
+ *  @return true/false è¿æ¥æˆåŠŸè¿”å›trueï¼Œå¦åˆ™false
 */
 bool MyDataBase::LinkDB(QString name){
     db=QSqlDatabase::addDatabase("QMYSQL",name);
@@ -37,42 +37,42 @@ bool MyDataBase::LinkDB(QString name){
     db.setPassword(PassWord);
     bool ok=db.open();
     if(!ok){
-        qInfo()<<"´ò¿ªÊı¾İ¿âÊ§°Ü";
+        qInfo()<<"æ‰“å¼€æ•°æ®åº“å¤±è´¥";
         return false;
     }
-    qInfo()<<"Á¬½ÓÊı¾İ¿â³É¹¦";
+    qInfo()<<"è¿æ¥æ•°æ®åº“æˆåŠŸ";
     return true;
 }
 
-/*! @brief ²åÈëÊı¾İµ½Êı¾İ¿â
-* @param sqlcommand Ö´ĞĞ²åÈëÓï¾äµÄÄÚÈİ£¬¾ßÌåÓï¾äÓÉµ÷ÓÃÕßÉú³É
-* @return true/false ²åÈë³É¹¦·µ»Øtrue£¬·ñÔòfalse
+/*! @brief æ’å…¥æ•°æ®åˆ°æ•°æ®åº“
+* @param sqlcommand æ‰§è¡Œæ’å…¥è¯­å¥çš„å†…å®¹ï¼Œå…·ä½“è¯­å¥ç”±è°ƒç”¨è€…ç”Ÿæˆ
+* @return true/false æ’å…¥æˆåŠŸè¿”å›trueï¼Œå¦åˆ™false
 */
 bool MyDataBase::InsertData(QString sqlcommand){
     if(!db.open()){
-        qInfo()<<"Êı¾İ¿âÎ´´ò¿ª";
+        qInfo()<<"æ•°æ®åº“æœªæ‰“å¼€";
         return false;
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qInfo()<<"²åÈëÊı¾İÊ§°Ü";
+        qInfo()<<"æ’å…¥æ•°æ®å¤±è´¥";
         return false;
     }
     return true;
 }
 
-/*! @brief ²éÕÒÊı¾İ£¬Ö»ÄÜ²éµ½µ¥¸öÊı¾İ
- *  @param sqlcommand Ö´ĞĞ²éÕÒÓï¾äµÄÄÚÈİ£¬¾ßÌåÓï¾äÓÉµ÷ÓÃÕßÉú³É
- *  @return data ²éÕÒµ½Ôò·µ»ØÊı¾İ£¬·ñÔò·µ»Ø¿Õ×Ö·û´®
+/*! @brief æŸ¥æ‰¾æ•°æ®ï¼Œåªèƒ½æŸ¥åˆ°å•ä¸ªæ•°æ®
+ *  @param sqlcommand æ‰§è¡ŒæŸ¥æ‰¾è¯­å¥çš„å†…å®¹ï¼Œå…·ä½“è¯­å¥ç”±è°ƒç”¨è€…ç”Ÿæˆ
+ *  @return data æŸ¥æ‰¾åˆ°åˆ™è¿”å›æ•°æ®ï¼Œå¦åˆ™è¿”å›ç©ºå­—ç¬¦ä¸²
 */
 QString MyDataBase::FindSingleData(QString sqlcommand){
     if(!db.open()){
-        qInfo()<<"Êı¾İ¿âÎ´´ò¿ª";
+        qInfo()<<"æ•°æ®åº“æœªæ‰“å¼€";
         return "";
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qInfo()<<"²éµ½Êı¾İÊ§°Ü";
+        qInfo()<<"æŸ¥åˆ°æ•°æ®å¤±è´¥";
         return "";
     }
     query.next();
@@ -80,24 +80,24 @@ QString MyDataBase::FindSingleData(QString sqlcommand){
     return data;
 }
 
-/*! @brief ²éÕÒÊı¾İ£¬·µ»ØËùÓĞ²éµ½µÄÊı¾İ
- *  @param  sqlcommand Ö´ĞĞ²éÕÒÓï¾äµÄÄÚÈİ£¬¾ßÌåÓï¾äÓÉµ÷ÓÃÕßÉú³É
- *  @return data ËùÓĞÊı¾İµÄÁĞ±íµÄÖ¸Õë£¬Ê§°ÜÔò·µ»Ø¿ÕÖ¸Õë
+/*! @brief æŸ¥æ‰¾æ•°æ®ï¼Œè¿”å›æ‰€æœ‰æŸ¥åˆ°çš„æ•°æ®
+ *  @param  sqlcommand æ‰§è¡ŒæŸ¥æ‰¾è¯­å¥çš„å†…å®¹ï¼Œå…·ä½“è¯­å¥ç”±è°ƒç”¨è€…ç”Ÿæˆ
+ *  @return data æ‰€æœ‰æ•°æ®çš„åˆ—è¡¨çš„æŒ‡é’ˆï¼Œå¤±è´¥åˆ™è¿”å›ç©ºæŒ‡é’ˆ
 */
 QList<QStringList>* MyDataBase::FindDatas(QString sqlcommand){
     if(!db.open()){
-        qInfo()<<"Êı¾İ¿âÎ´´ò¿ª";
+        qInfo()<<"æ•°æ®åº“æœªæ‰“å¼€";
         return nullptr;
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qInfo()<<"²éÕÒÊı¾İÊ§°Ü";
+        qInfo()<<"æŸ¥æ‰¾æ•°æ®å¤±è´¥";
         return nullptr;
     }
     QSqlRecord record=query.record();
     int count=record.count();
     QStringList values;
-    QList<QStringList> data=new QList<QStringL>;
+    QList<QStringList>* data=new QList<QStringList>;
     while(query.next()){
         for(int i=0;i<count;i++){
             if(query.value(i).isValid())
@@ -105,47 +105,47 @@ QList<QStringList>* MyDataBase::FindDatas(QString sqlcommand){
             else
                 values.append("");
         }
-        data.append(values);
+        data->append(values);
     }
     return data;
 }
 
-/*! @brief ¸üĞÂÊı¾İ
- *  @param sqlcommand Ö´ĞĞ¸üĞÂÓï¾äµÄÄÚÈİ£¬¾ßÌåÓï¾äÓÉµ÷ÓÃÕßÉú³É
- *  @return true/false ¸üĞÂ³É¹¦·µ»Øtrue£¬·ñÔòfalse
+/*! @brief æ›´æ–°æ•°æ®
+ *  @param sqlcommand æ‰§è¡Œæ›´æ–°è¯­å¥çš„å†…å®¹ï¼Œå…·ä½“è¯­å¥ç”±è°ƒç”¨è€…ç”Ÿæˆ
+ *  @return true/false æ›´æ–°æˆåŠŸè¿”å›trueï¼Œå¦åˆ™false
 */
 bool MyDataBase::UpdataData(QString sqlcommand){
     if(!db.open()){
-        qInfo()<<"Êı¾İ¿âÎ´´ò¿ª";
+        qInfo()<<"æ•°æ®åº“æœªæ‰“å¼€";
         return false;
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qInfo()<<"¸üĞÂÊı¾İÊ§°Ü";
+        qInfo()<<"æ›´æ–°æ•°æ®å¤±è´¥";
         return false;
     }
     return true;
 }
 
-/*! @brief É¾³ıÊı¾İ£¬×¢ÒâÕâÊÇÉ¾³ıÒ»ĞĞÊı¾İµÄ
- *  @param sqlcommand Ö´ĞĞÉ¾³ıÓï¾äµÄÄÚÈİ£¬¾ßÌåÓï¾äÓÉµ÷ÓÃÕßÉú³É
- *  @return true/false É¾³ı³É¹¦·µ»Øtrue£¬·ñÔòfalse
+/*! @brief åˆ é™¤æ•°æ®ï¼Œæ³¨æ„è¿™æ˜¯åˆ é™¤ä¸€è¡Œæ•°æ®çš„
+ *  @param sqlcommand æ‰§è¡Œåˆ é™¤è¯­å¥çš„å†…å®¹ï¼Œå…·ä½“è¯­å¥ç”±è°ƒç”¨è€…ç”Ÿæˆ
+ *  @return true/false åˆ é™¤æˆåŠŸè¿”å›trueï¼Œå¦åˆ™false
 */
 bool MyDataBase::DeleteData(QString sqlcommand){
     if(!db.open()){
-        qInfo()<<"Êı¾İ¿âÎ´´ò¿ª";
+        qInfo()<<"æ•°æ®åº“æœªæ‰“å¼€";
         return false;
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qInfo()<<"É¾³ıÊı¾İÊ§°Ü";
+        qInfo()<<"åˆ é™¤æ•°æ®å¤±è´¥";
         return false;
     }
     return true;
 }
 
-/*! @brief ·µ»ØËùÁ¬½ÓÊı¾İ¿âËùÓĞ±íµÄÃû³Æ
- *  @return names ËùÓĞ±íµÄÃû³Æ
+/*! @brief è¿”å›æ‰€è¿æ¥æ•°æ®åº“æ‰€æœ‰è¡¨çš„åç§°
+ *  @return names æ‰€æœ‰è¡¨çš„åç§°
 */
 QStringList* MyDataBase::GetDataTableName(){
     QString sqlcommand=QString("show tables");
@@ -153,49 +153,49 @@ QStringList* MyDataBase::GetDataTableName(){
     if(!query.exec(sqlcommand)){
         return nullptr;
     }
-    QStringList names=new QStringList;
+    QStringList* names=new QStringList;
     while(query.next()){
-        names.append(query.value(0).toString());
+        names->append(query.value(0).toString());
     }
     return names;
 }
 
-/*! @brief ·µ»ØÊı¾İ±íµÄ×Ö¶ÎĞÅÏ¢
- *  @param sqlcommand Ö´ĞĞ²éÑ¯Êı¾İ±íµÄÓï¾ä£¬ÓÉµ÷ÓÃÕßÉú³É
- *  @return infos Êı¾İ±íµÄ×Ö¶ÎĞÅÏ¢£¬Ê§°Ü·µ»Ø¿Õ
+/*! @brief è¿”å›æ•°æ®è¡¨çš„å­—æ®µä¿¡æ¯
+ *  @param sqlcommand æ‰§è¡ŒæŸ¥è¯¢æ•°æ®è¡¨çš„è¯­å¥ï¼Œç”±è°ƒç”¨è€…ç”Ÿæˆ
+ *  @return infos æ•°æ®è¡¨çš„å­—æ®µä¿¡æ¯ï¼Œå¤±è´¥è¿”å›ç©º
 */
 QList<QStringList>* MyDataBase::GetTableColumnName(QString sqlcommand){
     if(!db.open()){
-        qInfo()<<"Êı¾İ¿âÎ´´ò¿ª";
+        qInfo()<<"æ•°æ®åº“æœªæ‰“å¼€";
         return nullptr;
     }
     QSqlQuery query(sqlcommand,db);
     if(!query.exec(sqlcommand)){
-        qInfo()<<"²éÑ¯Ê§°Ü";
+        qInfo()<<"æŸ¥è¯¢å¤±è´¥";
         return nullptr;
     }
     QSqlRecord record=query.record();
     int count=record.count();
     QStringList info;
-    QList<QStringList> infos=new QList<QStringList>();
+    QList<QStringList>* infos=new QList<QStringList>();
     while(query.next()){
         for(int i=0;i<count;i++){
             if(query.value(i).isValid())
-                info.append(query.value(i).toString());        //ÕâÀïÔİÊ±ÊÇField|Type|Null|Key|Default|ExtraÕâ¼¸¸öÀàĞÍ
+                info.append(query.value(i).toString());        //è¿™é‡Œæš‚æ—¶æ˜¯Field|Type|Null|Key|Default|Extraè¿™å‡ ä¸ªç±»å‹
             else
                 info.append("");
         }
-        infos.append(info);
+        infos->append(info);
     }
     return infos;
 }
 
-/*! @brief ¹Ø±ÕÊı¾İ¿â
- *  @return true/false ÊÇ·ñ¹Ø±Õ³É¹¦£¬Ó¦¸Ã²»»á³öÏÖÊ²Ã´ÎÊÌâ°É
+/*! @brief å…³é—­æ•°æ®åº“
+ *  @return true/false æ˜¯å¦å…³é—­æˆåŠŸï¼Œåº”è¯¥ä¸ä¼šå‡ºç°ä»€ä¹ˆé—®é¢˜å§
 */
 bool MyDataBase::CloseDB(){
     if(!db.open()){
-        qInfo()<<"Êı¾İ¿âÎ´´ò¿ª";
+        qInfo()<<"æ•°æ®åº“æœªæ‰“å¼€";
         return true;
     }
     db.close();

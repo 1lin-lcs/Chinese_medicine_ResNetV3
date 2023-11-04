@@ -11,7 +11,7 @@ public:
     MyTcpServer();
 
 protected:
-    void imcomingConnection(qintptr socketDescriptor);  //ÊµÏÖ¶àÏß³Ì£¬»ñµÃÇ¶Ì××Ö
+    void imcomingConnection(qintptr);  //å®žçŽ°å¤šçº¿ç¨‹ï¼ŒèŽ·å¾—åµŒå¥—å­—
 
 signals:
     void SocketDesc(qintptr socketDescriptor);
