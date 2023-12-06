@@ -4,8 +4,8 @@
 #include <QMainWindow>
 #include <QSqlTableModel>
 #include <QSqlDatabase>
-#include <QList>
 #include <QSqlQuery>
+#include <QPair>
 #include "databaseconfig.h"
 
 QT_BEGIN_NAMESPACE
@@ -13,8 +13,6 @@ namespace Ui {
 class MainWindow;
 }
 QT_END_NAMESPACE
-
-
 
 class MainWindow : public QMainWindow
 {
@@ -29,7 +27,7 @@ private:
     bool readConfig();
     bool connectDB();
     bool createModel();
-    QStringList getHeaderNames();
+    QList<QPair<QString,QString>> getHeaderNames();
     void init();
     void updateButtonState();
 
@@ -51,5 +49,6 @@ private:
     DatabaseInfo* m_databaseInfo=new DatabaseInfo();
     QString m_currentTable="";
     bool m_isConnected=false;
+    QList<QPair<QString,QString>> m_headerLists;    //第一个用来存储关键字的，第二个用来存储类型，但是似乎不用了，暂时不更改，留作以后使用
 };
 #endif // MAINWINDOW_H

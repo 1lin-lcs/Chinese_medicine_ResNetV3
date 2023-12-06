@@ -105,17 +105,18 @@ bool MainWindow::connectDB(){
  * \brief 查询表头的名称
  * \return QStringList 查询到的表头的名称
  */
-QStringList MainWindow::getHeaderNames(){
+QList<QPair<QString, QString>> MainWindow::getHeaderNames(){
     if(!m_db.isOpen())
-        return QStringList();
+        return QList<QPair<QString, QString>>();
     QSqlQuery query("DESCRIBE "+m_currentTable,m_db);
     if(!query.exec())
-        return QStringList();
-    QStringList headers;
+        return QList<QPair<QString, QString>>();
+    m_headerLists.clear();
     while(query.next()){
-        headers.append(query.value(0).toString());
+        QPair<QString,QString> header(query.value(0).toString(),query.value(1).toString());
+        m_headerLists.append(header);
     }
-    return headers;
+    return m_headerLists;
 }
 
 /*!
@@ -137,7 +138,7 @@ bool MainWindow::createModel(){
     }
 
     m_currentTable=ui->DBcomboBox->itemText(0);
-    QStringList headers=getHeaderNames();
+    QList<QPair<QString,QString>> headers=getHeaderNames();
     if(headers.length()==0)
         return false;
     m_sqlTableModel=new QSqlTableModel(this,m_db);
@@ -148,8 +149,8 @@ bool MainWindow::createModel(){
         m_sqlTableModel=nullptr;
         return false;
     }
-    for(const QString& header:headers)
-        m_sqlTableModel->setHeaderData(m_sqlTableModel->fieldIndex(header),Qt::Horizontal,header);
+    for(const QPair<QString,QString>& header:headers)
+        m_sqlTableModel->setHeaderData(m_sqlTableModel->fieldIndex(header.first),Qt::Horizontal,header.first);
     ui->tableView->setModel(m_sqlTableModel);
     m_isConnected=true;
     return true;
@@ -198,12 +199,7 @@ void MainWindow::dialog_getConfig(DatabaseInfo configInfo){
  */
 void MainWindow::AddButton_clicked(){
     int row=m_sqlTableModel->rowCount();
-    int column=m_sqlTableModel->columnCount();
     m_sqlTableModel->insertRow(row);
-    for(int i=0;i<column;i++){
-        m_sqlTableModel->setData(m_sqlTableModel->index(row,i),"");
-    }
-    ui->tableView->setModel(m_sqlTableModel);
 }
 
 /*!
