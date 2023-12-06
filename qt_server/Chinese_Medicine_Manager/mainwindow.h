@@ -3,10 +3,9 @@
 
 #include <QMainWindow>
 #include <QSqlTableModel>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QPair>
 #include "databaseconfig.h"
+#include "readonlydelegate.h"
+#include "finddata.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -41,6 +40,7 @@ private slots:
     void DeleteButton_clicked();
     void RevertButton_clicked();
     void SubmitButton_clicked();
+    void FindDataButton_clicked();
 
 private:
     Ui::MainWindow *ui;

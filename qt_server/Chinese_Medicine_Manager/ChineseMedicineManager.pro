@@ -11,15 +11,20 @@ CONFIG += c++17
 
 SOURCES += \
     databaseconfig.cpp \
+    finddata.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    readonlydelegate.cpp
 
 HEADERS += \
     databaseconfig.h \
-    mainwindow.h
+    finddata.h \
+    mainwindow.h \
+    readonlydelegate.h
 
 FORMS += \
     databaseconfig.ui \
+    finddata.ui \
     mainwindow.ui
 
 # Default rules for deployment.

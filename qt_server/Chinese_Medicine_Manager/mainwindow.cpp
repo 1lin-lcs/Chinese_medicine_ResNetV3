@@ -36,6 +36,7 @@ void MainWindow::myConnect(){
     connect(ui->SubmitButton,&QPushButton::clicked,this,&MainWindow::SubmitButton_clicked);
     connect(ui->AddButton,&QPushButton::clicked,this,&MainWindow::AddButton_clicked);
     connect(ui->DeleteButton,&QPushButton::clicked,this,&MainWindow::DeleteButton_clicked);
+    connect(ui->FindDataButton,&QPushButton::clicked,this,&MainWindow::FindDataButton_clicked);
 }
 
 /*!
@@ -151,6 +152,8 @@ bool MainWindow::createModel(){
     }
     for(const QPair<QString,QString>& header:headers)
         m_sqlTableModel->setHeaderData(m_sqlTableModel->fieldIndex(header.first),Qt::Horizontal,header.first);
+    ReadOnlyDelegate* readonlyDelegate=new ReadOnlyDelegate(nullptr);
+    ui->tableView->setItemDelegateForColumn(0,readonlyDelegate);
     ui->tableView->setModel(m_sqlTableModel);
     m_isConnected=true;
     return true;
@@ -200,6 +203,7 @@ void MainWindow::dialog_getConfig(DatabaseInfo configInfo){
 void MainWindow::AddButton_clicked(){
     int row=m_sqlTableModel->rowCount();
     m_sqlTableModel->insertRow(row);
+    m_sqlTableModel->setData(m_sqlTableModel->index(row,0),row+1);
 }
 
 /*!
@@ -228,6 +232,15 @@ void MainWindow::SubmitButton_clicked(){
     if(result!=QMessageBox::Ok)
         return;
     m_sqlTableModel->submitAll();
+}
+
+/*!
+ * \brief 弹出查找信息的窗口
+ */
+void MainWindow::FindDataButton_clicked(){
+    FindData* dialog=new FindData(nullptr,m_headerLists,m_currentTable,m_db);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
 }
 
 /*!
