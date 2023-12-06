@@ -33,7 +33,7 @@ private:
     QString UserName="";
     QString PassWord="";
     QSqlDatabase db;
-
+    QStringList nameList;
 };
 
 #endif // MYDATABASE_H

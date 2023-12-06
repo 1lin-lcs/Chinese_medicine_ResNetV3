@@ -11,6 +11,8 @@
 #include <QTimer>
 #include <QThread>
 #include <QMap>
+#include <QHash>
+#include <QMetaObject>
 
 #define UserTable "user"
 
@@ -24,6 +26,7 @@ struct ServerConfig {
     int InvervalTime;
     int QuitCoint;
 };
+Q_DECLARE_METATYPE(ServerConfig)
 
 //保存服务端登录服务器的设置
 //注意，这个struct不要使用memset等较低级的内存操作函数
@@ -34,6 +37,7 @@ struct DataBaseInfo{
     QString UserName;
     QString PassWord;
 };
+Q_DECLARE_METATYPE(DataBaseInfo)
 
 
 class Chinese_Medicine_Server : public QObject
@@ -52,14 +56,14 @@ private:
     DataBaseInfo Info;                                      //保存服务端登录数据库的信息
     ServerConfig Serverconfig;                              //保存服务端的设置
     QTimer Timer;                                           //计时，自动关闭程序
-    QMap<qintptr,QMap<MyTcpSocket*,QThread*>> socketMap;    //保存socket和thread信息
+    QMap<qintptr,QHash<MyTcpSocket*,QThread*>> socketMap;    //保存socket和thread信息
 
-    void Task(QJsonDocument*,qintptr);             //处理Json文件内容
-    void TaskSignIn(QJsonDocument*,qintptr);       //处理登录事件
-    void TaskSignUp(QJsonDocument*,qintptr);       //处理注册事件
-    void ChangePasswd(QJsonDocument*,qintptr);     //处理修改密码事件
-    void DeleteUser(QJsonDocument*,qintptr);       //注销用户事件
-    void TaskIdentify(QJsonDocument*,qintptr);     //图片识别事件
+    void Task(QJsonDocument*,qintptr);                      //处理Json文件内容
+    void TaskSignIn(QJsonDocument*,qintptr);                //处理登录事件
+    void TaskSignUp(QJsonDocument*,qintptr);                //处理注册事件
+    void ChangePasswd(QJsonDocument*,qintptr);              //处理修改密码事件
+    void DeleteUser(QJsonDocument*,qintptr);                //注销用户事件
+    void TaskIdentify(QJsonDocument*,qintptr);              //图片识别事件
     void CreateErrorJsonInfo(qintptr,QString);              //发生错误时生成回复的Json文档
     void CreateSuccessJsonInfo(qintptr,int,QString);        //返回处理成功Json内容
 
@@ -67,7 +71,7 @@ private:
 private slots:
     void CloseProgram();                                    //自动退出程序!!注意!!这个函数还不完善
     void CreateSocket(qintptr);                             //创建新的socket，并移入新的线程
-    void GetJsonFile(QJsonDocument*,qintptr);      //获得Json文件内容
+    void GetJsonFile(QJsonDocument*,qintptr);               //获得Json文件内容
     void DeleteSocketThread();                              //从socketMap中获得信息，删除没有连接的socket和thread
 
 #ifdef UsePython
@@ -76,7 +80,7 @@ private slots:
 #endif
 
 signals:
-    void SendJsonDoc(QJsonDocument*,qintptr);      //发送信号到socket，让socket发送数据
+    void SendJsonDoc(QJsonDocument*,qintptr);               //发送信号到socket，让socket发送数据
 };
 
 #endif // CHINESE_MEDICINE_SERVER_H

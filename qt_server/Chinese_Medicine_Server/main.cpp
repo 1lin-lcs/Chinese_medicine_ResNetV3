@@ -4,6 +4,8 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+    qRegisterMetaType<ServerConfig>();
+    qRegisterMetaType<DataBaseInfo>();
     Chinese_Medicine_Server server;
     if(!server.ReadConfig())
         return -1;

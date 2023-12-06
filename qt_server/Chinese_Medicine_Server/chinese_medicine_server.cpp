@@ -3,9 +3,9 @@
 Chinese_Medicine_Server::Chinese_Medicine_Server()
 {}
 
-/*! @brief 这是读取配置文件用的
- *  @note 默认读取目录下的configuration.json文件
- *  @return true/false 读取成功就返回true，否则false
+/*! \brief 这是读取配置文件用的
+ *  \note 默认读取目录下的configuration.json文件
+ *  \return true/false 读取成功就返回true，否则false
 */
 bool Chinese_Medicine_Server::ReadConfig(){
     QFile configFile(QDir::currentPath()+"/configuration.json");
@@ -36,9 +36,9 @@ bool Chinese_Medicine_Server::ReadConfig(){
     return true;
 }
 
-/*! @brief 这是启动服务，进行监听，并连接数据库
- *  @note 确保ReadConfig()函数有运行且成功，否则出现错误
- *  @return true/false，启动成功就是true，否则false
+/*! \brief 这是启动服务，进行监听，并连接数据库
+ *  \note 确保ReadConfig()函数有运行且成功，否则出现错误
+ *  \return true/false，启动成功就是true，否则false
 */
 bool Chinese_Medicine_Server::Start(){
     server=new MyTcpServer();
@@ -63,10 +63,10 @@ bool Chinese_Medicine_Server::Start(){
     return true;
 }
 
-/*! @brief 这是处理Json文件内容的函数
- *  @param doc 从socket发来的Json文件的指针
- *  @param socketdesc socket的描述符
- *  @note 注意及时清除指针的内容
+/*! \brief 这是处理Json文件内容的函数
+ *  \param doc 从socket发来的Json文件的指针
+ *  \param socketdesc socket的描述符
+ *  \note 注意及时清除指针的内容
 */
 void Chinese_Medicine_Server::Task(QJsonDocument *doc, qintptr socketdesc){
     QJsonObject obj=doc->object();
@@ -91,9 +91,9 @@ void Chinese_Medicine_Server::Task(QJsonDocument *doc, qintptr socketdesc){
     }
 }
 
-/*! @brief 处理登录事件
- *  @param doc Json信息
- *  @param socketdesc socket的描述字符
+/*! \brief 处理登录事件
+ *  \param doc Json信息
+ *  \param socketdesc socket的描述字符
 */
 void Chinese_Medicine_Server::TaskSignIn(QJsonDocument *doc, qintptr socketdesc){
     QJsonObject information=doc->object();
@@ -133,9 +133,9 @@ void Chinese_Medicine_Server::TaskSignIn(QJsonDocument *doc, qintptr socketdesc)
     delete doc;
 }
 
-/*! @brief 处理注册的事件
- *  @param doc Json文档的内容
- *  @param socketdesc socket的描述符
+/*! \brief 处理注册的事件
+ *  \param doc Json文档的内容
+ *  \param socketdesc socket的描述符
 */
 void Chinese_Medicine_Server::TaskSignUp(QJsonDocument *doc, qintptr socketdesc){
     QJsonObject information=doc->object();
@@ -169,9 +169,9 @@ void Chinese_Medicine_Server::TaskSignUp(QJsonDocument *doc, qintptr socketdesc)
     }
 }
 
-/*! @brief 处理修改密码事件
- *  @param doc Json文档的内容
- *  @param socketdesc socket的描述符
+/*! \brief 处理修改密码事件
+ *  \param doc Json文档的内容
+ *  \param socketdesc socket的描述符
 */
 void Chinese_Medicine_Server::ChangePasswd(QJsonDocument* doc, qintptr socketdesc){
     QJsonObject information=doc->object();
@@ -212,9 +212,9 @@ void Chinese_Medicine_Server::ChangePasswd(QJsonDocument* doc, qintptr socketdes
     }
 }
 
-/*! @brief 处理注销用户事件
- *  @param doc Json文档的内容
- *  @param socketdesc socket的描述符
+/*! \brief 处理注销用户事件
+ *  \param doc Json文档的内容
+ *  \param socketdesc socket的描述符
 */
 void Chinese_Medicine_Server::DeleteUser(QJsonDocument *doc, qintptr socketdesc){
     QJsonObject information=doc->object();
@@ -246,9 +246,9 @@ void Chinese_Medicine_Server::DeleteUser(QJsonDocument *doc, qintptr socketdesc)
     }
 }
 
-/*! @brief 处理图片识别事件
- *  @param doc Json文档的内容
- *  @param socketdesc socket的描述符
+/*! \brief 处理图片识别事件
+ *  \param doc Json文档的内容
+ *  \param socketdesc socket的描述符
 */
 void Chinese_Medicine_Server::TaskIdentify(QJsonDocument *doc, qintptr socketdesc){
     QJsonObject response=doc->object();
@@ -283,9 +283,9 @@ void Chinese_Medicine_Server::TaskIdentify(QJsonDocument *doc, qintptr socketdes
 #endif
 }
 
-/*! @brief 生成含有错误信息的Json内容
- *  @param socketdesc socket的描述字符
- *  @param info 写入response的内容
+/*! \brief 生成含有错误信息的Json内容
+ *  \param socketdesc socket的描述字符
+ *  \param info 写入response的内容
 */
 void Chinese_Medicine_Server::CreateErrorJsonInfo(qintptr socketdesc,QString info){
     QJsonObject top,status,response;
@@ -301,10 +301,10 @@ void Chinese_Medicine_Server::CreateErrorJsonInfo(qintptr socketdesc,QString inf
     emit SendJsonDoc(doc,socketdesc);
 }
 
-/*! @brief 生成成功处理后的Json内容
- *  @param socketdesc socket的描述字符
- *  @param event 事件类型
- *  @param info 写入response的内容
+/*! \brief 生成成功处理后的Json内容
+ *  \param socketdesc socket的描述字符
+ *  \param event 事件类型
+ *  \param info 写入response的内容
 */
 void Chinese_Medicine_Server::CreateSuccessJsonInfo(qintptr socketdesc, int event, QString info){
     QJsonObject top,status,response;
@@ -324,8 +324,8 @@ void Chinese_Medicine_Server::CreateSuccessJsonInfo(qintptr socketdesc, int even
 
 #ifdef UsePython
 
-/*! @brief 如果使用的调用Python进行识别，这个函数就是初始化Python环境
- *  @return true/false 成功初始化Python环境为true，否则false
+/*! \brief 如果使用的调用Python进行识别，这个函数就是初始化Python环境
+ *  \return true/false 成功初始化Python环境为true，否则false
 */
 bool Chinese_Medicine_Server::InitPython(){
     Py_Initialize();
@@ -348,12 +348,12 @@ bool Chinese_Medicine_Server::InitPython(){
 //slot function
 
 
-/*! @brief 自动退出程序
- *  @attention 这个函数还不完善
+/*! \brief 自动退出程序
+ *  \attention 这个函数还不完善
 */
 void Chinese_Medicine_Server::CloseProgram(){
     if((Serverconfig.QuitCoint--)<0){
-        if(server!=nullptr||server->isListening()){
+        if(server!=nullptr&&server->isListening()){
             server->close();
             delete server;
         }
@@ -374,7 +374,7 @@ void Chinese_Medicine_Server::CloseProgram(){
     }
 }
 
-/*! @brief 创建新的socket并移入新线程处理
+/*! \brief 创建新的socket并移入新线程处理
 */
 void Chinese_Medicine_Server::CreateSocket(qintptr socketdesc){
     MyTcpSocket* socket=new MyTcpSocket(socketdesc);
@@ -387,25 +387,25 @@ void Chinese_Medicine_Server::CreateSocket(qintptr socketdesc){
     QThread* thread=new QThread(this);
     socket->moveToThread(thread);
 
-    QMap<MyTcpSocket*,QThread*> map;
+    QHash<MyTcpSocket*,QThread*> map;
     map.insert(socket,thread);
     socketMap.insert(socketdesc,map);
 }
 
-/*! @brief 接受从socket传来的Json文件
- *  @param doc 从socket发来的Json文件的指针
- *  @param socketdesc socket的描述符
+/*! \brief 接受从socket传来的Json文件
+ *  \param doc 从socket发来的Json文件的指针
+ *  \param socketdesc socket的描述符
 */
 void Chinese_Medicine_Server::GetJsonFile(/*QJsonDocument* */QJsonDocument *doc, qintptr socketdesc){
     Task(doc,socketdesc);
 }
 
-/*! @brief 删除没有连接的socket和thread
+/*! \brief 删除没有连接的socket和thread
 */
 void Chinese_Medicine_Server::DeleteSocketThread(){
     MyTcpSocket* socket=(MyTcpSocket*)sender();
     qintptr handle=socket->GetDesc();
-    QMap temp=socketMap.value(handle);
+    QHash temp=socketMap.value(handle);
     QThread* thread=temp.value(socket);
     socket->deleteLater();
     thread->deleteLater();
@@ -413,13 +413,13 @@ void Chinese_Medicine_Server::DeleteSocketThread(){
 }
 
 #ifdef UsePython
-/*! @brief 发送识别结果
+/*! \brief 发送识别结果
 */
 void Chinese_Medicine_Server::ReceiveEnd(QString end, qintptr socketdesc){
     CreateSuccessJsonInfo(socketdesc,4,end);
 }
 
-/*! @brief 打印识别错误
+/*! \brief 打印识别错误
 */
 void Chinese_Medicine_Server::GetThreadError(QString error){
     qInfo()<<error;
