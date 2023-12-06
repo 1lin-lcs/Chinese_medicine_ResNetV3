@@ -8,7 +8,7 @@
 		"HostName":"localhost",
 		"Port":3306,
 		"DataBaseName":"TestDataBase",
-		"UserName":"root",
-		"Password":"MySQL12ABab12"
+		"UserName":"",
+		"Password":""
 	}
 }
