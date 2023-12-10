@@ -27,6 +27,11 @@ bool Chinese_Medicine_Server::ReadConfig(){
     Serverconfig.IsAutoQuit=config.value("IsAutoQuit").toBool();
     Serverconfig.InvervalTime=config.value("InvervalTime").toInt();
     Serverconfig.QuitCoint=config.value("QuitCoint").toInt();
+#ifdef UseC++
+    LoadModule(config.value("ModelPath").toString());
+    categoryNum=config.value("CategoryNum").toInt();
+    LoadCategories(config.value("CategorisePath").toString());
+#endif
 
     Info.HostName=userInfo.value("HostName").toString();
     Info.Port=userInfo.value("Port").toInt();
@@ -281,6 +286,12 @@ void Chinese_Medicine_Server::TaskIdentify(QJsonDocument *doc, qintptr socketdes
     connect(thread, &IdentityThread::SendError, this,&Chinese_Medicine_Server::GetThreadError);
     thread->start();
 #endif
+
+#ifdef UseC++
+    IdentityThreadCpp* thread=new IdentityThreadCpp(path,categories,module,socketdesc);
+    connect(thread,&IdentityThreadCpp::SendResult,this,&Chinese_Medicine_Server::ReceiverResult);
+    thread->start();
+#endif
 }
 
 /*! \brief 生成含有错误信息的Json内容
@@ -337,6 +348,37 @@ bool Chinese_Medicine_Server::InitPython(){
     int nInit=PyEval_ThreadsInitialized();
     if(nInit){
         PyEval_SaveThread();
+    }
+    return true;
+}
+#endif
+
+#ifdef UseC++
+/*!
+ * \brief 加载植物种类
+ * \param filepath 种类的路径
+ * \return 成功加载返回true，否则false
+ */
+bool Chinese_Medicine_Server::LoadCategories(QString filepath){
+    QFile file(filepath);
+    if(!file.open(QIODevice::ReadOnly)){
+        qInfo()<<"打开类别文件失败";
+        return false;
+    }
+    QJsonParseError jsonerror;
+    QJsonDocument doc(QJsonDocument::fromJson(file.readAll(),&jsonerror));
+    if(jsonerror!=QJsonParseError::NoError){
+        qInfo()<<"读取类别文件出错";
+        qInfo()<<jsonerror.errorString();
+        return false;
+    }
+    if(i==0){
+        qInfo()<<"没有种类";
+        return false;
+    }
+    QJsonObject category=doc.object();
+    for(int i=0;i<=categoryNum;i++){
+        categories.append(category.value(QString::number(i)).toString());
     }
     return true;
 }
@@ -423,5 +465,25 @@ void Chinese_Medicine_Server::ReceiveEnd(QString end, qintptr socketdesc){
 */
 void Chinese_Medicine_Server::GetThreadError(QString error){
     qInfo()<<error;
+}
+#endif
+
+#ifdef UseC++
+/*!
+ * \brief 加载模型
+ * \param filepath 模型的路径
+ */
+void Chinese_Medicine_Server::LoadModule(QString filepath){
+    deviceType=torch::cuda::is_available()?torch::kCUDA:torch::kCPU;
+    module=torch::jit::load(filepath,deviceType);
+}
+
+/*!
+ * \brief 接受线程发过来的数据
+ * \param end 结果
+ * \param socketdesc 连接字节套
+ */
+void Chinese_Medicine_Server::ReceiverResult(QString end,qintptr socketdesc){
+    CreateSuccessJsonInfo(socketdesc,4,end);
 }
 #endif

@@ -5,6 +5,7 @@ MyDataBase::MyDataBase(QObject *parent)
 {}
 
 MyDataBase::~MyDataBase(){
+    db=QSqlDatabase();
     if(nameList.size()!=0)
         for(QString& name:nameList)
             QSqlDatabase::removeDatabase(name);

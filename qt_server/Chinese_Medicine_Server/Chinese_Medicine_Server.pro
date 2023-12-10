@@ -10,7 +10,6 @@ CONFIG += c++17 cmdline
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        IdentityThread.cpp \
         chinese_medicine_server.cpp \
         main.cpp \
         mydatabase.cpp \
@@ -23,16 +22,61 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 HEADERS += \
-    IdentityThread.h \
     chinese_medicine_server.h \
     mydatabase.h \
     mytcpserver.h \
     mytcpsocket.h
 
-# 如果使用Python，请添加对应的lib
+#DEFINES+=UsePython
+DEFINES+=UseC++
 
-DEFINES+=UsePython
+# 浣跨敤Python
 
 contains(DEFINES,UsePython){
     LIBS+=-L$$PWD/Python/libs/ -lpython311
+    SOURCES += IdentityThread.cpp
+    HEADERS += IdentityThread.h
 }
+
+# 浣跨敤C++
+contains(DEFINES,UseC++){
+    SOURCES += IdentityThreadC++.cpp
+    HEADERS += IdentityThreadC++.h
+    INCLUDEPATH += F:/MyLib/PyTorch/Release/include
+    INCLUDEPATH += F:/MyLib/opencv/build/include
+
+    win32:CONFIG(release, debug|release): LIBS += -LF:/MyLib/PyTorch/Release/lib/ -ltorch -lasmjit -lc10 -lc10_cuda -lcaffe2_nvrtc -lclog -lcpuinfo -ldnnl -lfbgemm -lfbjni -lfmt -lkineto\
+    -llibprotobuf-lite\
+    -llibprotobuf\
+    -llibprotoc\
+    -lnvfuser_codegen\
+    -lpthreadpool\
+    -lpytorch_jni\
+    -ltorch_cpu\
+    -ltorch_cuda\
+    -lXNNPACK
+    else:win32:CONFIG(debug, debug|release): LIBS += -LF:/MyLib/PyTorch/Debug/lib/ -ltorch -lasmjit -lc10 -lc10_cuda -lcaffe2_nvrtc -lclog -lcpuinfo -ldnnl -lfbgemm -lfbjni -lfmtd -lkineto\
+    -llibprotobuf-lited\
+    -llibprotobufd\
+    -llibprotocd\
+    -lnvfuser_codegen\
+    -lpthreadpool\
+    -lpytorch_jni\
+    -ltorch_cpu\
+    -ltorch_cuda\
+    -lXNNPACK
+
+    INCLUDEPATH += F:/MyLib/PyTorch/Release/lib
+    DEPENDPATH += F:/MyLib/PyTorch/Release/lib
+
+    win32:CONFIG(release, debug|release): LIBS += -LF:/MyLib/opencv/build/x64/vc16/lib/ -lopencv_world480
+    else:win32:CONFIG(debug, debug|release): LIBS += -LF:/MyLib/opencv/build/x64/vc16/lib/ -lopencv_world480d
+
+    INCLUDEPATH += F:/MyLib/opencv/build/x64/vc16/lib
+    DEPENDPATH += F:/MyLib/opencv/build/x64/vc16/lib
+
+}
+
+
+
+

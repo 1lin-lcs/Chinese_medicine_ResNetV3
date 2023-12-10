@@ -2,7 +2,10 @@
 	"Config":{
 		"IsAutoQuit":true,
 		"InvervalTime":10,
-		"QuitCoint":5
+		"QuitCoint":5,
+		"ModelPath":"",
+		"CategorisePath":"",
+		"CategoryNum":
 	},
 	"DataBaseUser":{
 		"HostName":"localhost",

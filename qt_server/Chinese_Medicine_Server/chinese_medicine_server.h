@@ -20,6 +20,10 @@
 #include "IdentityThread.h"
 #endif
 
+#ifdef UseC++
+#include "IdentityThreadC++.h"
+#endif
+
 //保存设置的结构体，方便增加设置项
 struct ServerConfig {
     bool IsAutoQuit;
@@ -56,7 +60,13 @@ private:
     DataBaseInfo Info;                                      //保存服务端登录数据库的信息
     ServerConfig Serverconfig;                              //保存服务端的设置
     QTimer Timer;                                           //计时，自动关闭程序
-    QMap<qintptr,QHash<MyTcpSocket*,QThread*>> socketMap;    //保存socket和thread信息
+    QMap<qintptr,QHash<MyTcpSocket*,QThread*>> socketMap;   //保存socket和thread信息
+#ifdef UseC++
+    Module module;                                          //加载模型
+    torch::DeviceType deviceType;                           //选择设备
+    int categoryNum=0;                                      //植物类别数量
+    QStringList categories;                                 //植物类别名称
+#endif
 
     void Task(QJsonDocument*,qintptr);                      //处理Json文件内容
     void TaskSignIn(QJsonDocument*,qintptr);                //处理登录事件
@@ -66,6 +76,11 @@ private:
     void TaskIdentify(QJsonDocument*,qintptr);              //图片识别事件
     void CreateErrorJsonInfo(qintptr,QString);              //发生错误时生成回复的Json文档
     void CreateSuccessJsonInfo(qintptr,int,QString);        //返回处理成功Json内容
+
+#ifdef UseC++
+    void LoadModule(QString);                               //如果使用C++，加载模型路径
+    bool LoadCategories(QString);                           //如果使用C++，加载植物类别
+#endif
 
 
 private slots:
@@ -77,6 +92,10 @@ private slots:
 #ifdef UsePython
     void ReceiveEnd(QString,qintptr);                       //接受识别的信息
     void GetThreadError(QString);                           //接受线程错误信息
+#endif
+
+#ifdef UseC++
+    void ReceiverResult(QString,qintprt);                   //接受识别的信息
 #endif
 
 signals:
