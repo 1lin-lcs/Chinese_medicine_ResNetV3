@@ -26,7 +26,7 @@ bool Chinese_Medicine_Server::ReadConfig(){
 
     Serverconfig.IsAutoQuit=config.value("IsAutoQuit").toBool();
     Serverconfig.InvervalTime=config.value("InvervalTime").toInt();
-    Serverconfig.QuitCoint=config.value("QuitCoint").toInt();
+    Serverconfig.QuitCoint=config.value("QuitCount").toInt();
 #ifdef UseC++
     LoadModule(config.value("ModelPath").toString());
     categoryNum=config.value("CategoryNum").toInt();
