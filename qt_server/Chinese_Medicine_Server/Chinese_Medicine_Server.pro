@@ -28,7 +28,8 @@ HEADERS += \
     mytcpsocket.h
 
 #DEFINES+=UsePython
-DEFINES+=UseC++
+DEFINES+=UseCpp
+#DEFINES+=UseThreadPool
 
 # 使用Python
 
@@ -39,11 +40,11 @@ contains(DEFINES,UsePython){
 }
 
 # 使用C++
-contains(DEFINES,UseC++){
+contains(DEFINES,UseCpp){
     SOURCES += IdentityThreadC++.cpp
     HEADERS += IdentityThreadC++.h
     INCLUDEPATH += F:/MyLib/PyTorch/Release/include
-    INCLUDEPATH += F:/MyLib/opencv/build/include
+    INCLUDEPATH += F:/MyLib/opencv/Official_build/include
 
     win32:CONFIG(release, debug|release): LIBS += -LF:/MyLib/PyTorch/Release/lib/ -ltorch -lasmjit -lc10 -lc10_cuda -lcaffe2_nvrtc -lclog -lcpuinfo -ldnnl -lfbgemm -lfbjni -lfmt -lkineto\
     -llibprotobuf-lite\
@@ -69,14 +70,17 @@ contains(DEFINES,UseC++){
     INCLUDEPATH += F:/MyLib/PyTorch/Release/lib
     DEPENDPATH += F:/MyLib/PyTorch/Release/lib
 
-    win32:CONFIG(release, debug|release): LIBS += -LF:/MyLib/opencv/build/x64/vc16/lib/ -lopencv_world480
-    else:win32:CONFIG(debug, debug|release): LIBS += -LF:/MyLib/opencv/build/x64/vc16/lib/ -lopencv_world480d
+    win32:CONFIG(release, debug|release): LIBS += -LF:/MyLib/opencv/Official_build/x64/vc16/lib/ -lopencv_world480
+    else:win32:CONFIG(debug, debug|release): LIBS += -LF:/MyLib/opencv/Official_build/x64/vc16/lib/ -lopencv_world480d
 
-    INCLUDEPATH += F:/MyLib/opencv/build/x64/vc16/lib
-    DEPENDPATH += F:/MyLib/opencv/build/x64/vc16/lib
+    INCLUDEPATH += F:/MyLib/opencv/Official_build/x64/vc16/lib
+    DEPENDPATH += F:/MyLib/opencv/Official_build/x64/vc16/lib
 
 }
 
-
-
+#使用线程池
+contains(DEFINES,UseThreadPool){
+    SOURCES+=mytcptask.cpp
+    HEADERS+=mytcptask.h
+}
 

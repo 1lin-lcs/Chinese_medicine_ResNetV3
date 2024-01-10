@@ -1,7 +1,11 @@
 #include "chinese_medicine_server.h"
 
 Chinese_Medicine_Server::Chinese_Medicine_Server()
-{}
+{
+#ifdef UseThreadPool
+    pool.setMaxThreadCount(10);
+#endif
+}
 
 /*! \brief 这是读取配置文件用的
  *  \note 默认读取目录下的configuration.json文件
@@ -27,7 +31,7 @@ bool Chinese_Medicine_Server::ReadConfig(){
     Serverconfig.IsAutoQuit=config.value("IsAutoQuit").toBool();
     Serverconfig.InvervalTime=config.value("InvervalTime").toInt();
     Serverconfig.QuitCoint=config.value("QuitCount").toInt();
-#ifdef UseC++
+#ifdef UseCpp
     LoadModule(config.value("ModelPath").toString());
     categoryNum=config.value("CategoryNum").toInt();
     LoadCategories(config.value("CategorisePath").toString());
@@ -287,8 +291,8 @@ void Chinese_Medicine_Server::TaskIdentify(QJsonDocument *doc, qintptr socketdes
     thread->start();
 #endif
 
-#ifdef UseC++
-    IdentityThreadCpp* thread=new IdentityThreadCpp(path,categories,module,socketdesc);
+#ifdef UseCpp
+    IdentityThreadCpp* thread=new IdentityThreadCpp(path,categories,socketdesc,module);
     connect(thread,&IdentityThreadCpp::SendResult,this,&Chinese_Medicine_Server::ReceiverResult);
     thread->start();
 #endif
@@ -353,7 +357,7 @@ bool Chinese_Medicine_Server::InitPython(){
 }
 #endif
 
-#ifdef UseC++
+#ifdef UseCpp
 /*!
  * \brief 加载植物种类
  * \param filepath 种类的路径
@@ -367,12 +371,12 @@ bool Chinese_Medicine_Server::LoadCategories(QString filepath){
     }
     QJsonParseError jsonerror;
     QJsonDocument doc(QJsonDocument::fromJson(file.readAll(),&jsonerror));
-    if(jsonerror!=QJsonParseError::NoError){
+    if(jsonerror.error!=QJsonParseError::NoError){
         qInfo()<<"读取类别文件出错";
         qInfo()<<jsonerror.errorString();
         return false;
     }
-    if(i==0){
+    if(categoryNum==0){
         qInfo()<<"没有种类";
         return false;
     }
@@ -415,6 +419,7 @@ void Chinese_Medicine_Server::CloseProgram(){
         exit(0);
     }
 }
+#ifdef UseCpp
 
 /*! \brief 创建新的socket并移入新线程处理
 */
@@ -454,6 +459,39 @@ void Chinese_Medicine_Server::DeleteSocketThread(){
     socketMap.remove(handle);
 }
 
+/*!
+ * \brief 加载模型
+ * \param filepath 模型的路径
+ */
+void Chinese_Medicine_Server::LoadModule(QString filepath){
+    deviceType=torch::cuda::is_available()?torch::kCUDA:torch::kCPU;
+    module=torch::jit::load(filepath.toStdString(),deviceType);
+}
+
+/*!
+ * \brief 接受线程发过来的数据
+ * \param end 结果
+ * \param socketdesc 连接字节套
+ */
+void Chinese_Medicine_Server::ReceiverResult(QString end,qintptr socketdesc){
+    CreateSuccessJsonInfo(socketdesc,4,end);
+}
+#endif
+
+#ifdef UseThreadPool
+/*!
+ * \brief 添加socket到线程池中
+ * \param handle，socket套接字
+ */
+void Chinese_Medicine_Server::AddSocket(qintptr handle){
+    MyTcpTask* compute=new MyTcpTask();
+    compute->setSocketDescriptor(handle);
+    connect(compute,&MyTcpTask::SendJsonFile,this,&Chinese_Medicine_Server::GetJsonFile);
+    connect(this,&Chinese_Medicine_Server::SendJsonDoc,compute,&MyTcpTask::GetData);
+    pool.start(compute);
+}
+#endif
+
 #ifdef UsePython
 /*! \brief 发送识别结果
 */
@@ -465,25 +503,5 @@ void Chinese_Medicine_Server::ReceiveEnd(QString end, qintptr socketdesc){
 */
 void Chinese_Medicine_Server::GetThreadError(QString error){
     qInfo()<<error;
-}
-#endif
-
-#ifdef UseC++
-/*!
- * \brief 加载模型
- * \param filepath 模型的路径
- */
-void Chinese_Medicine_Server::LoadModule(QString filepath){
-    deviceType=torch::cuda::is_available()?torch::kCUDA:torch::kCPU;
-    module=torch::jit::load(filepath,deviceType);
-}
-
-/*!
- * \brief 接受线程发过来的数据
- * \param end 结果
- * \param socketdesc 连接字节套
- */
-void Chinese_Medicine_Server::ReceiverResult(QString end,qintptr socketdesc){
-    CreateSuccessJsonInfo(socketdesc,4,end);
 }
 #endif

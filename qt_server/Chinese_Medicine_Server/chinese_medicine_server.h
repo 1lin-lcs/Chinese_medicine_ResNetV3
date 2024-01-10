@@ -20,8 +20,13 @@
 #include "IdentityThread.h"
 #endif
 
-#ifdef UseC++
+#ifdef UseCpp
 #include "IdentityThreadC++.h"
+#endif
+
+#ifdef UseThreadPool
+#include <QThreadPool>
+#include "mytcptask.h"
 #endif
 
 //保存设置的结构体，方便增加设置项
@@ -60,12 +65,17 @@ private:
     DataBaseInfo Info;                                      //保存服务端登录数据库的信息
     ServerConfig Serverconfig;                              //保存服务端的设置
     QTimer Timer;                                           //计时，自动关闭程序
+
+#ifdef UseCpp
     QMap<qintptr,QHash<MyTcpSocket*,QThread*>> socketMap;   //保存socket和thread信息
-#ifdef UseC++
     Module module;                                          //加载模型
     torch::DeviceType deviceType;                           //选择设备
     int categoryNum=0;                                      //植物类别数量
     QStringList categories;                                 //植物类别名称
+#endif
+
+#ifdef UseThreadPool
+    QThreadPool pool;
 #endif
 
     void Task(QJsonDocument*,qintptr);                      //处理Json文件内容
@@ -77,25 +87,28 @@ private:
     void CreateErrorJsonInfo(qintptr,QString);              //发生错误时生成回复的Json文档
     void CreateSuccessJsonInfo(qintptr,int,QString);        //返回处理成功Json内容
 
-#ifdef UseC++
+#ifdef UseCpp
     void LoadModule(QString);                               //如果使用C++，加载模型路径
     bool LoadCategories(QString);                           //如果使用C++，加载植物类别
 #endif
 
-
 private slots:
     void CloseProgram();                                    //自动退出程序!!注意!!这个函数还不完善
-    void CreateSocket(qintptr);                             //创建新的socket，并移入新的线程
-    void GetJsonFile(QJsonDocument*,qintptr);               //获得Json文件内容
-    void DeleteSocketThread();                              //从socketMap中获得信息，删除没有连接的socket和thread
 
 #ifdef UsePython
     void ReceiveEnd(QString,qintptr);                       //接受识别的信息
     void GetThreadError(QString);                           //接受线程错误信息
 #endif
 
-#ifdef UseC++
-    void ReceiverResult(QString,qintprt);                   //接受识别的信息
+#ifdef UseCpp
+    void CreateSocket(qintptr);                             //创建新的socket，并移入新的线程
+    void GetJsonFile(QJsonDocument*,qintptr);               //获得Json文件内容
+    void DeleteSocketThread();                              //从socketMap中获得信息，删除没有连接的socket和thread
+    void ReceiverResult(QString,qintptr);                   //接受识别的信息
+#endif
+
+#ifdef UseThreadPool
+    void AddSocket(qintptr);
 #endif
 
 signals:
