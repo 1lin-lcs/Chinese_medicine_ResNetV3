@@ -55,7 +55,11 @@ bool Chinese_Medicine_Server::Start(){
         qInfo()<<"Server启动失败";
         return false;
     }
+#ifndef UseThreadPool
     connect(server,&MyTcpServer::SocketDesc,this,&Chinese_Medicine_Server::CreateSocket);
+#else
+    connect(server,&MyTcpServer::SocketDesc,this,&Chinese_Medicine_Server::AddSocket);
+#endif
     qInfo()<<"Server启动成功";
     DataBase=new MyDataBase(Info.HostName,Info.Port,Info.DataBaseName,Info.UserName,Info.PassWord);
     if(!DataBase->LinkDB("User")){                                               //起个名字而已，实际作用是关闭用的
@@ -416,6 +420,12 @@ void Chinese_Medicine_Server::CloseProgram(){
         Py_Finalize();
 #endif
 
+#ifdef UseThreadPool
+        foreach (auto task, tcpTasks) {
+            if(task!=nullptr)
+                delete task;
+        }
+#endif
         exit(0);
     }
 }
@@ -489,6 +499,7 @@ void Chinese_Medicine_Server::AddSocket(qintptr handle){
     connect(compute,&MyTcpTask::SendJsonFile,this,&Chinese_Medicine_Server::GetJsonFile);
     connect(this,&Chinese_Medicine_Server::SendJsonDoc,compute,&MyTcpTask::GetData);
     pool.start(compute);
+    tcpTasks.append(compute);
 }
 #endif
 

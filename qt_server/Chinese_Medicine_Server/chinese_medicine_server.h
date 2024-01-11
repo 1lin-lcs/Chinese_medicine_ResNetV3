@@ -75,7 +75,8 @@ private:
 #endif
 
 #ifdef UseThreadPool
-    QThreadPool pool;
+    QThreadPool pool;                                       //线程池
+    QList<MyTcpTask*> tcpTasks;                                //线程任务
 #endif
 
     void Task(QJsonDocument*,qintptr);                      //处理Json文件内容
