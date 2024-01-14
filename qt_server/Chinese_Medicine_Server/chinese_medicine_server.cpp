@@ -56,7 +56,7 @@ bool Chinese_Medicine_Server::Start(){
         return false;
     }
 #ifndef UseThreadPool
-    connect(server,&MyTcpServer::SocketDesc,this,&Chinese_Medicine_Server::CreateSocket);
+    connect(server,&MyTcpServer::MySocketDesc,this,&Chinese_Medicine_Server::CreateSocket);
 #else
     connect(server,&MyTcpServer::SocketDesc,this,&Chinese_Medicine_Server::AddSocket);
 #endif
@@ -402,6 +402,13 @@ bool Chinese_Medicine_Server::LoadCategories(QString filepath){
  *  \attention 这个函数还不完善
 */
 void Chinese_Medicine_Server::CloseProgram(){
+#ifndef UseThreadPool
+    if(ConnectionNum!=0)
+        return;
+#else
+    if(pool.activeThreadCount()!=0)
+        return;
+#endif
     if((Serverconfig.QuitCoint--)<0){
         if(server!=nullptr&&server->isListening()){
             server->close();
@@ -436,13 +443,16 @@ void Chinese_Medicine_Server::CloseProgram(){
 void Chinese_Medicine_Server::CreateSocket(qintptr socketdesc){
     MyTcpSocket* socket=new MyTcpSocket(socketdesc);
 
-    connect(socket,&MyTcpSocket::SendJsonFile,this,&Chinese_Medicine_Server::GetJsonFile);
-    connect(socket,&MyTcpSocket::readyRead,socket,&MyTcpSocket::GetJsonFile);
-    connect(this,&Chinese_Medicine_Server::SendJsonDoc,socket,&MyTcpSocket::SendData);
-    connect(socket,&MyTcpSocket::disconnected,this,&Chinese_Medicine_Server::DeleteSocketThread,Qt::QueuedConnection);
-
     QThread* thread=new QThread(this);
     socket->moveToThread(thread);
+
+    connect(socket,&MyTcpSocket::readyRead,socket,&MyTcpSocket::GetJsonFile,Qt::QueuedConnection);
+    connect(socket,&MyTcpSocket::SendJsonFile,this,&Chinese_Medicine_Server::GetJsonFile,Qt::QueuedConnection);
+    connect(this,&Chinese_Medicine_Server::SendJsonDoc,socket,&MyTcpSocket::SendData,Qt::QueuedConnection);
+    connect(socket,&MyTcpSocket::disconnected,this,&Chinese_Medicine_Server::DeleteSocketThread,Qt::QueuedConnection);
+
+    thread->start();
+    ConnectionNum++;
 
     QHash<MyTcpSocket*,QThread*> map;
     map.insert(socket,thread);
@@ -464,9 +474,12 @@ void Chinese_Medicine_Server::DeleteSocketThread(){
     qintptr handle=socket->GetDesc();
     QHash temp=socketMap.value(handle);
     QThread* thread=temp.value(socket);
+    socket->disconnect();
     socket->deleteLater();
+    thread->quit();
     thread->deleteLater();
     socketMap.remove(handle);
+    ConnectionNum--;
 }
 
 /*!

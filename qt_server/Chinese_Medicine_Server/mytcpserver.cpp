@@ -7,7 +7,6 @@ MyTcpServer::MyTcpServer()
  * \param handle 就是socketDescriptor
  * \note 官方文档 socketDescriptor argument is the native socket descriptor for the accepted connection
  */
-void MyTcpServer::imcomingConnection(qintptr handle){
-    emit SocketDesc(handle);
-    emit newConnection();
+void MyTcpServer::incomingConnection(qintptr handle){
+    emit MySocketDesc(handle);
 }

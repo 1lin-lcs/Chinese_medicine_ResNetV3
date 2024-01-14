@@ -18,7 +18,8 @@ void IdentityThreadCpp::run(){
     cv::cvtColor(image,image2,cv::COLOR_BGR2RGB);
     cv::Mat image_transformed;
     cv::resize(image2,image_transformed,cv::Size(224,224));
-    torch::Tensor tensor_image=torch::from_blob(image_transformed.data,{image_transformed.rows,image_transformed.cols,3});
+    image_transformed.convertTo(image_transformed, CV_32FC3, 1.0 / 255.0);
+    torch::Tensor tensor_image=torch::from_blob(image_transformed.data,{1,image_transformed.rows,image_transformed.cols,3});
     tensor_image=tensor_image.permute({0,3,1,2});
     tensor_image[0][0]=tensor_image[0][0].sub_(0.435).div_(0.264);
     tensor_image[0][1]=tensor_image[0][1].sub_(0.497).div_(0.253);

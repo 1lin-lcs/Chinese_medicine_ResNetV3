@@ -5,12 +5,12 @@
 		"QuitCoint":5,
 		"ModelPath":"",
 		"CategorisePath":"",
-		"CategoryNum":
+		"CategoryNum":0
 	},
 	"DataBaseUser":{
 		"HostName":"localhost",
 		"Port":3306,
-		"DataBaseName":"TestDataBase",
+		"DataBaseName":"",
 		"UserName":"",
 		"Password":""
 	}

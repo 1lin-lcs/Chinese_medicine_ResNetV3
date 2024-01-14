@@ -1,12 +1,12 @@
 {
 	"status":{
-		"server":0,
+		"server":0,		//与client相对应
 		"client":0,		//0是登录，1是注册，2是修改密码，3是注销用户，4是图片识别
 		"error":0,		//0是没有问题，1是有问题
 	},
 	"response":{
-		"data":"",
-		"external":""
+		"data":"",		//返回的结果内容
+		"external":""	//暂时用来保存文件类型
 	},
 	"information":{
 		"username":"",

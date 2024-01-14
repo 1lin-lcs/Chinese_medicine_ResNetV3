@@ -65,6 +65,7 @@ private:
     DataBaseInfo Info;                                      //保存服务端登录数据库的信息
     ServerConfig Serverconfig;                              //保存服务端的设置
     QTimer Timer;                                           //计时，自动关闭程序
+    int ConnectionNum=0;                                    //连接的客户端个数
 
 #ifdef UseCpp
     QMap<qintptr,QHash<MyTcpSocket*,QThread*>> socketMap;   //保存socket和thread信息

@@ -11,10 +11,10 @@ public:
     MyTcpServer();
 
 protected:
-    void imcomingConnection(qintptr);  //实现多线程，获得嵌套字
+    void incomingConnection(qintptr);  //实现多线程，获得嵌套字
 
 signals:
-    void SocketDesc(qintptr socketDescriptor);
+    void MySocketDesc(qintptr socketDescriptor);
 };
 
 #endif // MYTCPSERVER_H

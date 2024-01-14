@@ -8,6 +8,7 @@ MyTcpSocket::MyTcpSocket()
 MyTcpSocket::MyTcpSocket(qintptr socketdesc){
     socketDesc=socketdesc;
     this->setSocketDescriptor(socketdesc);
+    //connect(this,&MyTcpSocket::readyRead,this,&MyTcpSocket::GetJsonFile);
 }
 
 /*! \brief 这是析构函数，用来释放数据的
@@ -17,6 +18,7 @@ MyTcpSocket::~MyTcpSocket(){}
 /*! \brief 这是用来处理受到数据是否是一个完整的Json文件的函数
 */
 void MyTcpSocket::GetJsonFile(){
+    waitForReadyRead();
     JsonData.append(this->readAll());
     QJsonDocument* doc=new QJsonDocument(QJsonDocument::fromJson(JsonData,&JsonError));
     if(doc->isNull()||JsonError.error!=QJsonParseError::NoError){
