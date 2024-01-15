@@ -8,7 +8,6 @@ MyTcpSocket::MyTcpSocket()
 MyTcpSocket::MyTcpSocket(qintptr socketdesc){
     socketDesc=socketdesc;
     this->setSocketDescriptor(socketdesc);
-    //connect(this,&MyTcpSocket::readyRead,this,&MyTcpSocket::GetJsonFile);
 }
 
 /*! \brief 这是析构函数，用来释放数据的

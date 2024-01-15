@@ -56,7 +56,7 @@ bool MyDataBase::InsertData(QString sqlcommand){
         qInfo()<<"数据库未打开";
         return false;
     }
-    QSqlQuery query(sqlcommand,db);
+    QSqlQuery query(db);
     if(!query.exec(sqlcommand)){
         qInfo()<<"插入数据失败";
         return false;
@@ -73,11 +73,13 @@ QString MyDataBase::FindSingleData(QString sqlcommand){
         qInfo()<<"数据库未打开";
         return "";
     }
-    QSqlQuery query(sqlcommand,db);
+    QSqlQuery query(db);
     if(!query.exec(sqlcommand)){
         qInfo()<<"查到数据失败";
         return "";
     }
+    if(query.size()==0||query.size()==-1)
+        return "";
     query.next();
     QString data=query.value(0).toString();
     return data;
@@ -92,11 +94,13 @@ QList<QStringList>* MyDataBase::FindDatas(QString sqlcommand){
         qInfo()<<"数据库未打开";
         return nullptr;
     }
-    QSqlQuery query(sqlcommand,db);
+    QSqlQuery query(db);
     if(!query.exec(sqlcommand)){
         qInfo()<<"查找数据失败";
         return nullptr;
     }
+    if(query.size()==0||query.size()==-1)
+        return nullptr;
     QSqlRecord record=query.record();
     int count=record.count();
     QStringList values;
@@ -122,7 +126,7 @@ bool MyDataBase::UpdataData(QString sqlcommand){
         qInfo()<<"数据库未打开";
         return false;
     }
-    QSqlQuery query(sqlcommand,db);
+    QSqlQuery query(db);
     if(!query.exec(sqlcommand)){
         qInfo()<<"更新数据失败";
         return false;
@@ -139,7 +143,7 @@ bool MyDataBase::DeleteData(QString sqlcommand){
         qInfo()<<"数据库未打开";
         return false;
     }
-    QSqlQuery query(sqlcommand,db);
+    QSqlQuery query(db);
     if(!query.exec(sqlcommand)){
         qInfo()<<"删除数据失败";
         return false;
@@ -152,10 +156,12 @@ bool MyDataBase::DeleteData(QString sqlcommand){
 */
 QStringList* MyDataBase::GetDataTableName(){
     QString sqlcommand=QString("show tables");
-    QSqlQuery query(sqlcommand,db);
+    QSqlQuery query(db);
     if(!query.exec(sqlcommand)){
         return nullptr;
     }
+    if(query.size()==0||query.size()==-1)
+        return nullptr;
     QStringList* names=new QStringList;
     while(query.next()){
         names->append(query.value(0).toString());
@@ -172,11 +178,13 @@ QList<QStringList>* MyDataBase::GetTableColumnName(QString sqlcommand){
         qInfo()<<"数据库未打开";
         return nullptr;
     }
-    QSqlQuery query(sqlcommand,db);
+    QSqlQuery query(db);
     if(!query.exec(sqlcommand)){
         qInfo()<<"查询失败";
         return nullptr;
     }
+    if(query.size()==0||query.size()==-1)
+        return nullptr;
     QSqlRecord record=query.record();
     int count=record.count();
     QStringList info;
