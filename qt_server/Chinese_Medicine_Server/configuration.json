@@ -2,7 +2,8 @@
 	"Config":{
 		"IsAutoQuit":true,
 		"InvervalTime":10,
-		"QuitCoint":5,
+		"QuitCount":5,
+		"ListenPort":50002,
 		"ModelPath":"",
 		"CategorisePath":"",
 		"CategoryNum":0

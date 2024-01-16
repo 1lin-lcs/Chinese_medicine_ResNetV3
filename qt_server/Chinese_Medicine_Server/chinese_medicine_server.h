@@ -34,6 +34,7 @@ struct ServerConfig {
     bool IsAutoQuit;
     int InvervalTime;
     int QuitCoint;
+    int ListenPort;
 };
 Q_DECLARE_METATYPE(ServerConfig)
 

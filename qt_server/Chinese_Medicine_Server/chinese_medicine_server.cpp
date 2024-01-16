@@ -31,6 +31,7 @@ bool Chinese_Medicine_Server::ReadConfig(){
     Serverconfig.IsAutoQuit=config.value("IsAutoQuit").toBool();
     Serverconfig.InvervalTime=config.value("InvervalTime").toInt();
     Serverconfig.QuitCoint=config.value("QuitCount").toInt();
+    Serverconfig.ListenPort=config.value("ListenPort").toInt();
 #ifdef UseCpp
     LoadModule(config.value("ModelPath").toString());
     categoryNum=config.value("CategoryNum").toInt();
@@ -51,7 +52,7 @@ bool Chinese_Medicine_Server::ReadConfig(){
 */
 bool Chinese_Medicine_Server::Start(){
     server=new MyTcpServer();
-    if(!server->listen(QHostAddress::LocalHost,50002)){
+    if(!server->listen(QHostAddress::LocalHost,Serverconfig.ListenPort)){
         qInfo()<<"Server启动失败";
         return false;
     }

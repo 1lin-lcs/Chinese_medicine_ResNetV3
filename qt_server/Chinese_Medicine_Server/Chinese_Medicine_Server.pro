@@ -30,6 +30,7 @@ HEADERS += \
 #DEFINES+=UsePython
 DEFINES+=UseCpp
 #DEFINES+=UseThreadPool
+DEFINES+=ShowInformation
 
 # 使用Python
 
