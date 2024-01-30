@@ -5,7 +5,7 @@
 #include "mydatabase.h"
 #include "mytcpserver.h"
 #include "mytcpsocket.h"
-#include <QJsonObject>
+#include <QJsonArray>
 #include <QFile>
 #include <QDir>
 #include <QTimer>
@@ -73,7 +73,7 @@ private:
     Module module;                                          //加载模型
     torch::DeviceType deviceType;                           //选择设备
     int categoryNum=0;                                      //植物类别数量
-    QStringList categories;                                 //植物类别名称
+    QJsonObject*  categories;                               //植物类别名称
 #endif
 
 #ifdef UseThreadPool
@@ -88,7 +88,8 @@ private:
     void DeleteUser(QJsonDocument*,qintptr);                //注销用户事件
     void TaskIdentify(QJsonDocument*,qintptr);              //图片识别事件
     void CreateErrorJsonInfo(qintptr,QString);              //发生错误时生成回复的Json文档
-    void CreateSuccessJsonInfo(qintptr,int,QString);        //返回处理成功Json内容
+    void CreateSuccessJsonInfo(qintptr,int,QStringList);    //返回处理成功Json内容
+    void CreateSuccessJsonInfo(qintptr,int,QString);        //返回处理成功Json内容(重载版本)
 
 #ifdef UseCpp
     void LoadModule(QString);                               //如果使用C++，加载模型路径
@@ -107,7 +108,7 @@ private slots:
     void CreateSocket(qintptr);                             //创建新的socket，并移入新的线程
     void GetJsonFile(QJsonDocument*,qintptr);               //获得Json文件内容
     void DeleteSocketThread();                              //从socketMap中获得信息，删除没有连接的socket和thread
-    void ReceiverResult(QString,qintptr);                   //接受识别的信息
+    void ReceiverResult(QStringList,qintptr);                   //接受识别的信息
 #endif
 
 #ifdef UseThreadPool

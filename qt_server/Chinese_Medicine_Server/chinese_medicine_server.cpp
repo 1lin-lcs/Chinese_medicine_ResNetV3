@@ -341,6 +341,33 @@ void Chinese_Medicine_Server::CreateSuccessJsonInfo(qintptr socketdesc, int even
     emit SendJsonDoc(doc,socketdesc);
 }
 
+/*! \brief 生成成功处理后的Json内容
+ *  \param socketdesc socket的描述字符
+ *  \param event 事件类型
+ *  \param info 写入response和external的内容
+*/
+void Chinese_Medicine_Server::CreateSuccessJsonInfo(qintptr socketdesc, int event, QStringList info){
+    QJsonObject top,status,response;
+
+    status.insert("server",event);
+    status.insert("error",0);
+
+    response.insert("data",info.at(0));
+    if(info.size()!=1){
+        QJsonArray array;
+        for(int i=1;i<info.size();i++){
+            array.append(info.at(i));
+        }
+        response.insert("external",array);
+    }
+
+    top.insert("status",status);
+    top.insert("response",response);
+
+    QJsonDocument* doc=new QJsonDocument(top);
+    emit SendJsonDoc(doc,socketdesc);
+}
+
 
 #ifdef UsePython
 
@@ -385,10 +412,8 @@ bool Chinese_Medicine_Server::LoadCategories(QString filepath){
         qInfo()<<"没有种类";
         return false;
     }
-    QJsonObject category=doc.object();
-    for(int i=0;i<=categoryNum;i++){
-        categories.append(category.value(QString::number(i)).toString());
-    }
+    categories=new QJsonObject(doc.object());
+
     return true;
 }
 #endif
@@ -497,7 +522,7 @@ void Chinese_Medicine_Server::LoadModule(QString filepath){
  * \param end 结果
  * \param socketdesc 连接字节套
  */
-void Chinese_Medicine_Server::ReceiverResult(QString end,qintptr socketdesc){
+void Chinese_Medicine_Server::ReceiverResult(QStringList end,qintptr socketdesc){
     CreateSuccessJsonInfo(socketdesc,4,end);
 }
 #endif

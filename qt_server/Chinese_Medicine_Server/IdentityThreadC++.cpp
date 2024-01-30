@@ -1,6 +1,6 @@
 #include "IdentityThreadC++.h"
 
-IdentityThreadCpp::IdentityThreadCpp(QString filename,QStringList categories,qintptr handle,Module module){
+IdentityThreadCpp::IdentityThreadCpp(QString filename,QJsonObject* categories,qintptr handle,Module module){
     m_filename=filename;
     m_categories=categories;
     m_socketDesc=handle;
@@ -28,5 +28,7 @@ void IdentityThreadCpp::run(){
     tensor_image=tensor_image.to(deviceType);
     torch::Tensor output=m_Module.forward({tensor_image}).toTensor();
     auto prediction=output.argmax(1).item<int>();
-    emit SendResult(m_categories.at(prediction),m_socketDesc);
+    QJsonObject category=m_categories->value(QString::number(prediction)).toObject();
+    QStringList list={category.value("ChineseName").toString(),category.value("EnglishName").toString(),category.value("Describe").toString()};
+    emit SendResult(list,m_socketDesc);
 }
