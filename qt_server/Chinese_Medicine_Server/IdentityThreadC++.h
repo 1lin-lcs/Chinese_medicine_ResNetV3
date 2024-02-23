@@ -14,13 +14,15 @@ using torch::jit::script::Module;
 class IdentityThreadCpp : public QThread{
     Q_OBJECT
 public:
-    IdentityThreadCpp(QString,QJsonObject*,qintptr,Module);
+    IdentityThreadCpp(QString,QJsonObject*,qintptr,Module,double*,double*);
     ~IdentityThreadCpp();
 private:
     QString m_filename;
     QJsonObject* m_categories;
     qintptr m_socketDesc;
     Module m_Module;
+    double* m_Mean;
+    double* m_Std;
 
 protected:
     void run();

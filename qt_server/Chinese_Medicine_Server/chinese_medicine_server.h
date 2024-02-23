@@ -73,12 +73,14 @@ private:
     Module module;                                          //加载模型
     torch::DeviceType deviceType;                           //选择设备
     int categoryNum=0;                                      //植物类别数量
-    QJsonObject*  categories;                               //植物类别名称
+    QJsonObject* categories=nullptr;                        //植物类别名称
+    double* m_Mean=nullptr;                                 //处理图片归一化的通道均值
+    double* m_Std=nullptr;                                  //处理图片归一化的通道标准差
 #endif
 
 #ifdef UseThreadPool
     QThreadPool pool;                                       //线程池
-    QList<MyTcpTask*> tcpTasks;                                //线程任务
+    QList<MyTcpTask*> tcpTasks;                             //线程任务
 #endif
 
     void Task(QJsonDocument*,qintptr);                      //处理Json文件内容
@@ -108,7 +110,7 @@ private slots:
     void CreateSocket(qintptr);                             //创建新的socket，并移入新的线程
     void GetJsonFile(QJsonDocument*,qintptr);               //获得Json文件内容
     void DeleteSocketThread();                              //从socketMap中获得信息，删除没有连接的socket和thread
-    void ReceiverResult(QStringList,qintptr);                   //接受识别的信息
+    void ReceiverResult(QStringList,qintptr);               //接受识别的信息
 #endif
 
 #ifdef UseThreadPool

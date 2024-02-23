@@ -36,6 +36,15 @@ bool Chinese_Medicine_Server::ReadConfig(){
     LoadModule(config.value("ModelPath").toString());
     categoryNum=config.value("CategoryNum").toInt();
     LoadCategories(config.value("CategorisePath").toString());
+    QJsonObject cope=top.value("Cope").toObject();
+    QJsonArray mean=cope.value("Mean").toArray();
+    QJsonArray std=cope.value("Std").toArray();
+    m_Mean=new double[mean.size()];
+    m_Std=new double[std.size()];
+    for(int i=0;i<mean.size();i++)
+        m_Mean[i]=mean.at(i).toDouble();
+    for(int i=0;i<std.size();i++)
+        m_Std[i]=std.at(i).toDouble();
 #endif
 
     Info.HostName=userInfo.value("HostName").toString();
@@ -297,7 +306,7 @@ void Chinese_Medicine_Server::TaskIdentify(QJsonDocument *doc, qintptr socketdes
 #endif
 
 #ifdef UseCpp
-    IdentityThreadCpp* thread=new IdentityThreadCpp(path,categories,socketdesc,module);
+    IdentityThreadCpp* thread=new IdentityThreadCpp(path,categories,socketdesc,module,m_Mean,m_Std);
     connect(thread,&IdentityThreadCpp::SendResult,this,&Chinese_Medicine_Server::ReceiverResult);
     thread->start();
 #endif
@@ -447,6 +456,15 @@ void Chinese_Medicine_Server::CloseProgram(){
 
         QDir path(QDir::currentPath() + "/tmp");
         path.removeRecursively();
+
+#ifdef UseCpp
+        if(categories!=nullptr)
+            delete categories;
+        if(m_Mean!=nullptr)
+            delete[] m_Mean;
+        if(m_Std!=nullptr)
+            delete[] m_Std;
+#endif
 
 #ifdef UsePython
         PyGILState_Ensure();
