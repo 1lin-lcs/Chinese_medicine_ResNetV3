@@ -17,7 +17,7 @@ MyTcpSocket::~MyTcpSocket(){}
 /*! \brief 这是用来处理受到数据是否是一个完整的Json文件的函数
 */
 void MyTcpSocket::GetJsonFile(){
-    waitForReadyRead();
+    waitForReadyRead(3000);
     JsonData.append(this->readAll());
     QJsonDocument* doc=new QJsonDocument(QJsonDocument::fromJson(JsonData,&JsonError));
     if(doc->isNull()||JsonError.error!=QJsonParseError::NoError){

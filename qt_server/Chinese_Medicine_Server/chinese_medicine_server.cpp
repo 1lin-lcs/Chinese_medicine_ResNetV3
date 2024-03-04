@@ -61,16 +61,16 @@ bool Chinese_Medicine_Server::ReadConfig(){
 */
 bool Chinese_Medicine_Server::Start(){
     server=new MyTcpServer();
-    if(!server->listen(QHostAddress::LocalHost,Serverconfig.ListenPort)){
+    if(!server->listen(QHostAddress::AnyIPv4,Serverconfig.ListenPort)){
         qInfo()<<"Server启动失败";
         return false;
     }
-#ifndef UseThreadPool
-    connect(server,&MyTcpServer::MySocketDesc,this,&Chinese_Medicine_Server::CreateSocket);
-#else
+#ifdef UseThreadPool
     connect(server,&MyTcpServer::SocketDesc,this,&Chinese_Medicine_Server::AddSocket);
+#else
+    connect(server,&MyTcpServer::MySocketDesc,this,&Chinese_Medicine_Server::CreateSocket);
 #endif
-    qInfo()<<"Server启动成功";
+    qInfo()<<"Server启动成功"<<"端口号："<<Serverconfig.ListenPort;
     DataBase=new MyDataBase(Info.HostName,Info.Port,Info.DataBaseName,Info.UserName,Info.PassWord);
     if(!DataBase->LinkDB("User")){                                               //起个名字而已，实际作用是关闭用的
         qInfo()<<"连接数据库失败";
@@ -496,6 +496,12 @@ void Chinese_Medicine_Server::CreateSocket(qintptr socketdesc){
     connect(socket,&MyTcpSocket::disconnected,this,&Chinese_Medicine_Server::DeleteSocketThread,Qt::QueuedConnection);
 
     thread->start();
+
+#ifdef ShowInformation
+    qInfo()<<"新的连接";
+    socket->write("连接成功");
+#endif
+
     ConnectionNum++;
 
     QHash<MyTcpSocket*,QThread*> map;
