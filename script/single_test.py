@@ -5,14 +5,7 @@ from PIL import Image
 import os
 import json
 
-############################################
-#file_path是类别对应文件的文件路径             #
-#model_path是模型参数文件路径  			   #
-#img_path是图片文件的路径（可选）			   #
-#testimg是检测单个图片的函数				   #
-############################################
-
-file_path=r"../Chinese_Medicine_for_test.json"
+file_path=r"E:\文件\Documents\Python\pytorch_learning\Chinese_Medicine_old.json"
 with open(file_path,'r') as f:
     medicine=json.load(f)
 
@@ -43,11 +36,9 @@ transform=transforms.Compose([
         transforms.Normalize([0.435, 0.497, 0.328],[0.264, 0.253, 0.276])
     ])
 
-model_path=r"../example_small_1.pth"
+model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small\4\test42_acc0.7186858654022217.pth"
+img_path=r"E:\文件\Documents\Python\pytorch_learning\中草药\Agastacherugosa"
 
-#可以只使用函数，对单个图片进行检测
-'''
-img_path=r""
 files=os.listdir(img_path)
 a=0
 for i in files:
@@ -55,4 +46,3 @@ for i in files:
     print(a,end='\t')
     testimg(file)
     a+=1
-'''

@@ -152,7 +152,10 @@ void Chinese_Medicine_Server::TaskSignIn(QJsonDocument *doc, qintptr socketdesc)
         return;
     }
 
-    CreateSuccessJsonInfo(socketdesc,0,"获得账户信息成功，可以登录");
+    QString sql3=QString("select email from %1 where username=\"%2\"").arg(UserTable,user);
+    res=DataBase->FindSingleData(sql3);
+
+    CreateSuccessJsonInfo(socketdesc,0,res);
     delete doc;
 }
 
@@ -496,11 +499,6 @@ void Chinese_Medicine_Server::CreateSocket(qintptr socketdesc){
     connect(socket,&MyTcpSocket::disconnected,this,&Chinese_Medicine_Server::DeleteSocketThread,Qt::QueuedConnection);
 
     thread->start();
-
-#ifdef ShowInformation
-    qInfo()<<"新的连接";
-    socket->write("连接成功");
-#endif
 
     ConnectionNum++;
 

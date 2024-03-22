@@ -4,16 +4,17 @@ import torch.nn as nn
 import torch.nn.functional as F
 device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def Hswish(x,inplace=True):
-    return x*F.relu6(x+3.,inplace=inplace)/6.
+def Hswish(x,):
+    return x*F.relu6(x+3.,inplace=True)/6.
 
-def Hsigmoid(x,inplace=True):
-    return F.relu6(x+3.,inplace=inplace)/6.
+def Hsigmoid(x):
+    return F.relu6(x+3.,inplace=True)/6.
+
 
 #Spueeze-And-Excite模块
 class SEModule(nn.Module):
     def __init__(self,channel,reduction=4):
-        super().__init__()
+        super(SEModule,self).__init__()
         self.avg_pool=nn.AdaptiveAvgPool2d(1)
         self.se=nn.Sequential(
                 nn.Linear(channel,channel//reduction,bias=False),
@@ -31,7 +32,7 @@ class SEModule(nn.Module):
 #瓶颈层
 class Bottleneck(nn.Module):
     def __init__(self,in_channels,out_channels,kernel_size,exp_channels,stride,se=True,nl="HS"):  #se?
-        super().__init__()
+        super(Bottleneck,self).__init__()
         padding=(kernel_size-1)//2
         if nl=="RE":
             self.nlin_layer=F.relu6
@@ -100,11 +101,12 @@ class MobileNetV3_large(nn.Module):
         #卷积后不跟BN，就应该把bias设置为True
         self.conv3=nn.Conv2d(960,1280,1,1,padding=0,bias=True)
         self.conv4=nn.Conv2d(1280,num_classes,1,stride=1,padding=0,bias=True)
+        self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     def _make_layers(self,in_channels):
         layers=[]
         for out_channels,kernel_size,exp_channels,stride,se,nl in self.cfg:
-            layers.append(Bottleneck(in_channels,out_channels,kernel_size,exp_channels,stride,se,nl).to(device))
+            layers.append(Bottleneck(in_channels,out_channels,kernel_size,exp_channels,stride,se,nl).to(self.device))
             in_channels=out_channels
         return nn.Sequential(*layers)
 
@@ -137,7 +139,8 @@ class MobileNetV3_small(nn.Module):
         ]
     
     def __init__(self,num_classes):
-        super().__init__()
+        super(MobileNetV3_small,self).__init__()
+        self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.conv1=nn.Conv2d(3,16,3,2,padding=1,bias=False)
         self.bn1=nn.BatchNorm2d(16)
         #根据cfg数组自动生成所有的Bottlenck层
@@ -147,11 +150,12 @@ class MobileNetV3_small(nn.Module):
         #卷积后不跟BN，就应该把bias设置为True
         self.conv3=nn.Conv2d(576,1280,1,1,padding=0,bias=False)
         self.conv4=nn.Conv2d(1280,num_classes,1,stride=1,padding=0,bias=True)
+        self.seModule=SEModule(576).to(self.device); 
 
     def _make_layers(self,in_channels):
         layers=[]
         for out_channels,kernel_size,exp_channels,stride,se,nl in self.cfg:
-            layers.append(Bottleneck(in_channels,out_channels,kernel_size,exp_channels,stride,se,nl).to(device))
+            layers.append(Bottleneck(in_channels,out_channels,kernel_size,exp_channels,stride,se,nl).to(self.device))
             in_channels=out_channels
         return nn.Sequential(*layers)
 
@@ -159,8 +163,9 @@ class MobileNetV3_small(nn.Module):
         out=Hswish(self.bn1(self.conv1(x)))
         out=self.layers(out)
         out=self.bn2(self.conv2(out))
-        se=SEModule(out.size(1)).to(device)
-        out=Hswish(se(out))
+        #print(out.size(1)) 576
+        #se=self.seModule(out.size(1)).to(device)
+        out=Hswish(self.seModule(out))
         out=F.avg_pool2d(out,7)
         out=Hswish(self.conv3(out))
         out=self.conv4(out)

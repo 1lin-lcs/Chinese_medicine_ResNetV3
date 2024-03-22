@@ -4,14 +4,10 @@ from torchvision import datasets,transforms
 from torch.utils.data import DataLoader
 from torch.nn import *
 import os
+from PIL import Image
 
-############################################
-#data_dir是数据集文件夹		               #
-#model_path是model文件所在文件夹			   #
-############################################
-
-data_dir=r"../DataSet"
-model_path=r"../model"
+data_dir=r"E:\文件\Documents\Python\pytorch_learning\CM_data"
+model_path=r"E:\文件\Documents\Python\pytorch_learning\bak\small_new\1"
 batch_size=32
 
 trans=transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.435, 0.497, 0.328],[0.264, 0.253, 0.276])])
@@ -47,3 +43,23 @@ for i in model_file:
             accuary+=acc
     print(i)
     print("accuary is {}, loss_sum is {}".format(accuary/testdata_size,loss_sum))
+
+def predict(model,pic):
+    image=Image.open(pic)
+    normalize=transforms.Normalize([],[])
+    transforms=transforms.Compose(
+        [
+            transforms.Resize((224,224)),
+            transforms.ToTensor(),
+            normalize
+        ]
+    )
+
+    image=image.unsqueeze(0)
+    with torch.no_grad():
+        model.eval()
+        image=image.to(device)
+        output=model(image)
+        pre_lab=torch.argmax(output,dim=1)
+        result=pre_lab.item()
+    print(result)

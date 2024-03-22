@@ -3,18 +3,20 @@ from torchvision import datasets
 import os
 from PIL import Image
 import warnings
+import math
 
 warnings.filterwarnings("error",category=UserWarning)
 
-############################################
-#root_path是生成分类文件夹的根目录，需要自己设置 #
-############################################
-
-root_dir=r"../DataSet"
+root_dir=r"E:\文件\Documents\Python\pytorch_learning\中草药"
+root_path=r"E:\文件\Documents\Python\pytorch_learning\CM_Ndata"
+if not os.path.exists(root_path):
+    os.mkdir(root_path)
 dataset=datasets.ImageFolder(root_dir)
 
 dataset.classes
 dataset.class_to_idx
+with open("Record.txt","w") as f:
+    f.write(str(dataset.class_to_idx))
 
 data=[]
 
@@ -24,13 +26,11 @@ for file in dataset.imgs:
 data_len=len(data)
 #print(data_len)
 
-train_size=int(0.6*data_len)
+train_size=math.ceil(0.6*data_len)
 test_size=int(0.2*data_len)
 valid_size=int(0.2*data_len)
 
 def split_imgs(classes,file):
-    root_path=r""
-
     if not os.path.exists(os.path.join(root_path,"train")):
         os.mkdir(os.path.join(root_path,"train"))
     if not os.path.exists(os.path.join(root_path,"test")):
@@ -64,6 +64,8 @@ def split_imgs(classes,file):
 train_datasets,test_datasets,valid_datasets=torch.utils.data.random_split(data,[train_size,test_size,valid_size])
 
 train_imgList_line=[]
+
+os.chdir(root_path)
 
 for line in train_datasets:
     train_imgList_line.append(line[0])
