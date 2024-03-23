@@ -11,7 +11,6 @@
 #include <QTimer>
 #include <QThread>
 #include <QMap>
-#include <QHash>
 #include <QMetaObject>
 
 #define UserTable "user"
@@ -69,7 +68,7 @@ private:
     int ConnectionNum=0;                                    //连接的客户端个数
 
 #ifdef UseCpp
-    QMap<qintptr,QHash<MyTcpSocket*,QThread*>> socketMap;   //保存socket和thread信息
+    QMap<qintptr,QPair<MyTcpSocket*,QThread*>> socketMap;   //保存socket和thread信息
     Module module;                                          //加载模型
     torch::DeviceType deviceType;                           //选择设备
     int categoryNum=0;                                      //植物类别数量

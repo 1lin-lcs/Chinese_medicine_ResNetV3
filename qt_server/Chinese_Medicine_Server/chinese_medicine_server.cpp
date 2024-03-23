@@ -467,6 +467,16 @@ void Chinese_Medicine_Server::CloseProgram(){
             delete[] m_Mean;
         if(m_Std!=nullptr)
             delete[] m_Std;
+        if(!socketMap.empty()){
+            for(auto& socket:socketMap){
+                if(socket.first->state()!=0){
+                    socket.first->disconnect();
+                    socket.first->deleteLater();
+                    socket.second->quit();
+                    socket.second->deleteLater();
+                }
+            }
+        }
 #endif
 
 #ifdef UsePython
@@ -497,13 +507,14 @@ void Chinese_Medicine_Server::CreateSocket(qintptr socketdesc){
     connect(socket,&MyTcpSocket::SendJsonFile,this,&Chinese_Medicine_Server::GetJsonFile,Qt::QueuedConnection);
     connect(this,&Chinese_Medicine_Server::SendJsonDoc,socket,&MyTcpSocket::SendData,Qt::QueuedConnection);
     connect(socket,&MyTcpSocket::disconnected,this,&Chinese_Medicine_Server::DeleteSocketThread,Qt::QueuedConnection);
+    //connect(socket,&MyTcpSocket::disconnected,this,&MyTcpSocket::deleteLater);
+    //connect(thread,&QThread::finished,this,&QThread::deleteLater);
 
     thread->start();
 
     ConnectionNum++;
 
-    QHash<MyTcpSocket*,QThread*> map;
-    map.insert(socket,thread);
+    QPair<MyTcpSocket*,QThread*> map(socket,thread);
     socketMap.insert(socketdesc,map);
 }
 
@@ -520,12 +531,11 @@ void Chinese_Medicine_Server::GetJsonFile(/*QJsonDocument* */QJsonDocument *doc,
 void Chinese_Medicine_Server::DeleteSocketThread(){
     MyTcpSocket* socket=(MyTcpSocket*)sender();
     qintptr handle=socket->GetDesc();
-    QHash temp=socketMap.value(handle);
-    QThread* thread=temp.value(socket);
-    socket->disconnect();
-    socket->deleteLater();
-    thread->quit();
-    thread->deleteLater();
+    auto s=socketMap.value(handle);
+    s.first->disconnect();
+    s.first->deleteLater();
+    s.second->quit();
+    s.second->deleteLater();
     socketMap.remove(handle);
     ConnectionNum--;
 }
