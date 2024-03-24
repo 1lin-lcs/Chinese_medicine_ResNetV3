@@ -6,7 +6,8 @@
 	},
 	"response":{
 		"data":"",		//返回的结果内容
-		"external":""	//暂时用来保存文件类型
+		"external":"",	//暂时用来保存文件类型
+		"comment":[{}]	//评论
 	},
 	"information":{
 		"username":"",

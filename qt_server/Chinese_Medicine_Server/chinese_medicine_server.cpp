@@ -110,6 +110,7 @@ void Chinese_Medicine_Server::Task(QJsonDocument *doc, qintptr socketdesc){
     case 2:ChangePasswd(doc,socketdesc);break;
     case 3:DeleteUser(doc,socketdesc);break;
     case 4:TaskIdentify(doc,socketdesc);break;
+    case 5:TaskComment(doc,socketdesc);break;
     default:CreateErrorJsonInfo(socketdesc,"事件错误");delete doc;break;
     }
 }
@@ -315,6 +316,35 @@ void Chinese_Medicine_Server::TaskIdentify(QJsonDocument *doc, qintptr socketdes
 #endif
 }
 
+/*! \brief 处理用户提交的评论
+ *  \param doc Json文档的内容
+ *  \param socketdesc socket的描述符
+*/
+void Chinese_Medicine_Server::TaskComment(QJsonDocument *doc, qintptr socketdesc){
+    QJsonObject response=doc->object();
+    if(!response.contains("response")||!response.contains("information")){
+        CreateErrorJsonInfo(socketdesc,"内容缺失");
+        delete doc;
+        return;
+    }
+    QJsonObject res=response.value("response").toObject();
+    QString comment=res.value("data").toString();
+    QString category=res.value("external").toString();
+    QJsonObject info=response.value("information").toObject();
+    QString username=info.value("username").toString();
+    QString sql1=QString("insert into %1 (username,category,content,time) values ('%2',%3,'%4',now())").arg(CommentTable,username,category,comment);
+    if(DataBase->InsertData(sql1)){
+        CreateSuccessJsonInfo(socketdesc,1,"发布成功");
+        delete doc;
+        return;
+    }
+    else{
+        CreateErrorJsonInfo(socketdesc,"发布失败，服务端的问题");
+        delete doc;
+        return;
+    }
+}
+
 /*! \brief 生成含有错误信息的Json内容
  *  \param socketdesc socket的描述字符
  *  \param info 写入response的内容
@@ -356,10 +386,10 @@ void Chinese_Medicine_Server::CreateSuccessJsonInfo(qintptr socketdesc, int even
 /*! \brief 生成成功处理后的Json内容
  *  \param socketdesc socket的描述字符
  *  \param event 事件类型
- *  \param info 写入response和external的内容
+ *  \param info 写入response、external和comment的内容
 */
 void Chinese_Medicine_Server::CreateSuccessJsonInfo(qintptr socketdesc, int event, QStringList info){
-    QJsonObject top,status,response;
+    QJsonObject top,status,response,comment;
 
     status.insert("server",event);
     status.insert("error",0);
@@ -371,6 +401,21 @@ void Chinese_Medicine_Server::CreateSuccessJsonInfo(qintptr socketdesc, int even
             array.append(info.at(i));
         }
         response.insert("external",array);
+        QString category=info.at(info.size()-1);
+        QString sql1=QString("select username,content from %1 where category='%2'").arg(CommentTable,category);
+        QList<QStringList>* user_comments=DataBase->FindDatas(sql1);
+        if(user_comments!=nullptr){
+            QJsonArray comments;
+            for(int i=0;i<user_comments->size();i++){
+                QJsonObject c;
+                c.insert("name",user_comments->at(i).at(0));
+                c.insert("comment",user_comments->at(i).at(1));
+                //qDebug()<<user_comments->at(i).at(0)<<user_comments->at(i).at(1);
+                comments.push_back(c);
+            }
+            response.insert("comment",comments);
+        }
+        delete user_comments;
     }
 
     top.insert("status",status);

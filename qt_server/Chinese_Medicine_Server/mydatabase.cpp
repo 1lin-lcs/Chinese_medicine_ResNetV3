@@ -103,9 +103,9 @@ QList<QStringList>* MyDataBase::FindDatas(QString sqlcommand){
         return nullptr;
     QSqlRecord record=query.record();
     int count=record.count();
-    QStringList values;
     QList<QStringList>* data=new QList<QStringList>;
     while(query.next()){
+        QStringList values;
         for(int i=0;i<count;i++){
             if(query.value(i).isValid())
                 values.append(query.value(i).toString());

@@ -31,6 +31,6 @@ void IdentityThreadCpp::run(){
     torch::Tensor output=m_Module.forward({tensor_image}).toTensor();
     auto prediction=output.argmax(1).item<int>();
     QJsonObject category=m_categories->value(QString::number(prediction)).toObject();
-    QStringList list={category.value("ChineseName").toString(),category.value("EnglishName").toString(),category.value("Describe").toString()};
+    QStringList list={category.value("ChineseName").toString(),category.value("EnglishName").toString(),category.value("Describe").toString(),QString::number(prediction)};
     emit SendResult(list,m_socketDesc);
 }

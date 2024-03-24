@@ -14,6 +14,7 @@
 #include <QMetaObject>
 
 #define UserTable "user"
+#define CommentTable "comment"
 
 #ifdef UsePython
 #include "IdentityThread.h"
@@ -88,6 +89,7 @@ private:
     void ChangePasswd(QJsonDocument*,qintptr);              //处理修改密码事件
     void DeleteUser(QJsonDocument*,qintptr);                //注销用户事件
     void TaskIdentify(QJsonDocument*,qintptr);              //图片识别事件
+    void TaskComment(QJsonDocument*,qintptr);               //处理提交评论
     void CreateErrorJsonInfo(qintptr,QString);              //发生错误时生成回复的Json文档
     void CreateSuccessJsonInfo(qintptr,int,QStringList);    //返回处理成功Json内容
     void CreateSuccessJsonInfo(qintptr,int,QString);        //返回处理成功Json内容(重载版本)
