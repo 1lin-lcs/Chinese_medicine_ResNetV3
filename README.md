@@ -2,11 +2,11 @@
 
 Training MobileNetV3 for Chinese Medicine
 
-# Datasets:
+## Datasets:
 
 https://pan.baidu.com/s/1TDAEwULt-rvOrU0z6-G9eQ 提取码: f3mh 
 
-# Usage：
+## Usage：
 
     训练文件(Training file)：train_mobileNetV3_Chinese_medicine.py
 
@@ -24,7 +24,7 @@ https://pan.baidu.com/s/1TDAEwULt-rvOrU0z6-G9eQ 提取码: f3mh
 
     2、分类文件保存在DataSet文件夹中，之后可以使用train_mobileNetV3_Chinese_medicine.py进行训练
 
-###### 如果使用自己的训练集：
+#### 如果使用自己的训练集：
 
         1、使用Resize_pic.py和Mean_std_cal.py计算出所需的平均值和标准差
 
@@ -32,7 +32,23 @@ https://pan.baidu.com/s/1TDAEwULt-rvOrU0z6-G9eQ 提取码: f3mh
 
         3、剩下内容按照上面步骤的内容进行
 
+### 编译
+    - ChineseMedicineManager：使用Qt Creator打开ChineseMedicineManager.pro编译即可
+    - Chinese_Medicine_Server：使用Qt Creator打开Chinese_Medicine_Server.pro进行编译
+      - 如果使用C++的`Libtorch`
+        - 需要`Libtorch`、`OpenCV`库
+        - 需要将`LIBS`后的路径改为自己的路径
+      - 如果使用调用`Python`的方式
+        - 需要安装`Python`以及`Python`的`torch`库
+        - 需要修改`LIBS`的路径
+    - 微信小程序客户端使用微信开发者工具打开即可
+
+
 2024：
+
+---------------------4月20日更新----------------------
+
+上传微信小程序
 
 ---------------------3月4日更新----------------------
 

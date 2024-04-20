@@ -19,7 +19,6 @@ App({
   globalData: {
     tcpSocket:"",
     userInfo: null,
-    //address:'192.168.137.1'
     address:'127.0.0.1'
   },
   // encoding_index: require("./utils/encoding-indexes.js"),
