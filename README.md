@@ -1,6 +1,6 @@
-# Chinses_medicine_mobileNetV3
+# Chinses_medicine_ResNet18
 
-Training MobileNetV3 for Chinese Medicine
+Training ~~MobileNetV3~~ ResNet18 for Chinese Medicine
 
 ## Datasets:
 
