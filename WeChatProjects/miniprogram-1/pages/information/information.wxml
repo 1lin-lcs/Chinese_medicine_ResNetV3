@@ -1,0 +1,11 @@
+<!--pages/information/information.wxml-->
+<view class="text1">
+  <text>本小程序支持识别的植物\n</text>
+  <text>正确率仅在自己的测试集上测试</text>
+</view>
+<scroll-view class="detail">
+  <view wx:for="{{plants}}" wx:for-item="list" wx:key="key" class="list">
+    <text>{{list.item}}：</text>
+    <text>{{list.ACC}}</text> 
+  </view>
+</scroll-view>

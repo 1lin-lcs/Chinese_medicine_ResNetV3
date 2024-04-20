@@ -1,0 +1,12 @@
+<!--pages/personal_message/personal_message.wxml--> 
+<view class="container">  
+  <view class="form-item">  
+    <text>用户名: {{username}}</text>  
+  </view>  
+  <view class="form-item">  
+    <text>密码: {{password}}</text>  
+  </view>  
+  <view class="form-item">  
+    <text>邮箱: {{email}}</text>  
+  </view>  
+</view>

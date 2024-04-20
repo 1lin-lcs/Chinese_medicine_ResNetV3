@@ -1,0 +1,6 @@
+<!--pages/person/person.wxml-->
+<button bindtap="goToLogonPage" disabled="{{disable1}}" >登录</button>
+<button bindtap="goToRegisterPage" disabled="{{disable2}}">注册</button>
+<button bindtap="personalMessage">个人信息</button>
+<button bindtap="Logout" disabled="{{disable3}}">退出</button>
+<button bindtap="information" >关于识别</button>

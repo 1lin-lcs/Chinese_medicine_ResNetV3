@@ -1,0 +1,5 @@
+/* pages/personalMessage.wxss */
+.form-item {  
+  padding-left: 0rpx;
+  
+}

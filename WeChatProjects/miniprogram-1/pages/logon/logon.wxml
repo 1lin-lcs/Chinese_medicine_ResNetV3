@@ -1,0 +1,15 @@
+<!--pages/logon.wxml-->
+<view class="container">  
+  <form bindsubmit="submitForm">  
+    <view class="form-item">  
+      <input type="text" placeholder="用户名" name="username" />  
+    </view>  
+    <view class="form-item">  
+      <input type="password" placeholder="密码" name="password" />  
+    </view>  
+  <!--  <view class="form-item">  
+      <input type="email" placeholder="邮箱" name="email" />  
+    </view>  -->
+    <button form-type="submit" bindtap="Logon">登录</button>  
+  </form>  
+</view>

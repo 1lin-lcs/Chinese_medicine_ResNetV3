@@ -1,0 +1,38 @@
+{
+  "pages": [
+    "pages/main/main",
+    "pages/index/index",
+    "pages/logs/logs",
+    "pages/person/person",
+    "pages/register/register",
+    "pages/logon/logon",
+    "pages/personal_message/personal_message",
+    "pages/information/information"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "中草药识别",
+    "navigationBarTextStyle": "black",
+    "enablePullDownRefresh": true,
+    "backgroundColor": "#efefef"
+  },
+  "tabBar": {
+    "list": [
+      {
+        "pagePath": "pages/main/main",
+        "text": "首页",
+        "iconPath": "/common/image/首页未选中.png",
+        "selectedIconPath": "/common/image/首页选中.png"
+      },
+      {
+        "pagePath": "pages/person/person",
+        "text": "个人中心",
+        "iconPath": "/common/image/个人未选中.png",
+        "selectedIconPath": "/common/image/个人选中.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

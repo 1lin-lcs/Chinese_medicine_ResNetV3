@@ -1,0 +1,32 @@
+<!--pages/main/main.wxml-->
+<view class="container">  
+  <image class="background" src="/common/image/团委图标.jpg" mode="aspectFill"></image>
+  <view class="result_detail">
+    <view class="info">
+      中草药名字：{{Name}}
+    </view>  
+    <view>
+      中草药功效：{{Function}}
+    </view>
+  </view>
+  <view class="chooButFather">
+    <button class="chooseButton" bindtap="chooseImages">选择图片并上传</button>  
+  </view>
+</view> 
+<view hidden="{{hidden1}}">
+  {{isComment}}
+</view>
+<scroll-view class="comment" hidden="{{hidden2}}" scroll-y="true" enable-flex="true">
+  <view class="comment_list" wx:for="{{comment_list}}" wx:for-item="list" wx:key="key">
+    <view class="username">用户 {{list.name}}</view>
+    <view class="content">{{list.comment}}</view>
+  </view>
+</scroll-view>
+<view class="sendComment"  hidden="{{hidden1}}">
+  <form bindsubmit="submitForm">  
+    <view class="form-item">  
+      <input class="input" type="text" placeholder="说一说" name="comment" value="{{inputMessage}}"/>
+      <button class="sendButton" form-type="submit">发送</button>  
+    </view>  
+  </form>  
+</view>

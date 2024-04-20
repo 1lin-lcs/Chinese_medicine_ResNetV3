@@ -1,0 +1,8 @@
+/* pages/logon.wxss */
+.form-item {  
+  /* 定义 form-item 的样式，包括内边距、边框等 */  
+  padding: 10px;  
+  border: 1px solid #ccc; /* 添加边框，宽度为1像素，颜色为#ccc */  
+  border-radius: 5px; /* 边框圆角 */  
+  margin-bottom: 10px; /* 每个表单项之间的间距 */  
+}

@@ -1,0 +1,21 @@
+/* pages/information/information.wxss */
+.text1{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 5%;
+  margin-top:5%;
+}
+
+.detail{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: center;
+  line-height: auto;
+}
+
+.list{
+  line-height: 160%;
+}

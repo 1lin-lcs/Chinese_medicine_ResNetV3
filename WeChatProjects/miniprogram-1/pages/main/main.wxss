@@ -1,0 +1,72 @@
+/* pages/main/main.wxss */
+.comment{border-top: 3rpx black solid;padding-top: 10rpx;}
+.comment_list{border-bottom: 3rpx black solid;padding-bottom: 10rpx;}
+.username{ margin-left: 5%;}
+.content{margin-left:10%;}
+.sendComment{bottom: 0px;position: fixed;width: 100%;}
+.result_detail{
+  padding-top:200rpx;
+}
+.container{
+  height: 600rpx;
+  display: flex;
+  flex-direction: column;
+  margin-left: 10rpx;
+  margin-right: 10rpx;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.chooseButton{ margin-bottom: 10px;} 
+.info{flex-grow: 1;}
+.comment{
+  height: 350rpx;
+}
+.sendComment {
+  width:100%;
+  display: flex;
+  flex-direction: row; /* 水平排列 */
+  align-items: center; /* 垂直居中 */
+  margin-bottom: 40rpx;
+  /* height: 500rpx; */
+}
+
+.form-item {
+  width:100%;
+  display: flex;
+  flex-direction: row; /* 水平排列 */
+  align-items: center; /* 垂直居中 */
+}
+
+.input {
+  /*flex-grow: 1; /* input元素占满剩余空间 */
+  margin-left: 40rpx;
+  width:100%;
+  padding: 10rpx;  
+  border: 1rpx solid #ccc; /* 添加边框，宽度为1像素，颜色为#ccc */
+  border-radius: 5rpx; /* 边框圆角 */ 
+  margin-bottom: 10rpx; /* 每个表单项之间的间距 */ 
+  margin-right: 10rpx;
+}
+
+.sendButton {
+  margin-left: 10rpx;
+  width: 80rpx;
+  height: 65rpx;
+  font-size: 26rpx;
+  line-height: 60rpx;
+  padding: 0;
+  border-radius: 4rpx;
+  margin-bottom: 10rpx;
+}
+ /* .sendButton{left: 100%;}  */
+
+ .background{
+  position:absolute;
+  opacity:20% ;
+  padding:100rpx 0;
+  z-index: -1;
+ }
