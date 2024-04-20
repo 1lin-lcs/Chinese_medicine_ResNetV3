@@ -33,16 +33,16 @@ https://pan.baidu.com/s/1TDAEwULt-rvOrU0z6-G9eQ 提取码: f3mh
         3、剩下内容按照上面步骤的内容进行
 
 ### 编译
-    - ChineseMedicineManager：使用Qt Creator打开ChineseMedicineManager.pro编译即可
-    - Chinese_Medicine_Server：使用Qt Creator打开Chinese_Medicine_Server.pro进行编译
-      - 如果使用C++的`Libtorch`
-        - 需要`Libtorch`、`OpenCV`库
-        - 需要将`LIBS`后的路径改为自己的路径
-      - 如果使用调用`Python`的方式
-        - 需要安装`Python`以及`Python`的`torch`库
-        - 需要修改`LIBS`的路径
-    - 微信小程序客户端使用微信开发者工具打开即可
 
+- ChineseMedicineManager：使用Qt Creator打开ChineseMedicineManager.pro编译即可
+- Chinese_Medicine_Server：使用Qt Creator打开Chinese_Medicine_Server.pro进行编译
+  - 如果使用C++的`Libtorch`
+    - 需要`Libtorch`、`OpenCV`库
+    - 需要将`LIBS`后的路径改为自己的路径
+  - 如果使用调用`Python`的方式
+    - 需要安装`Python`以及`Python`的`torch`库
+    - 需要修改`LIBS`的路径
+- 微信小程序客户端使用微信开发者工具打开即可
 
 2024：
 
